@@ -1,9 +1,7 @@
 import { url } from '../utils';
-
-const axios = require('axios');
-const https = require('https');
-const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-const fs = require('fs/promises');
+import axios from 'axios';
+import https from 'https';
+import fs from 'fs/promises';
 
 const axiosClient = axios.create({
     httpsAgent: new https.Agent({
