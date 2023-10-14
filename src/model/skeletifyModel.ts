@@ -1,5 +1,1 @@
-
-
-export class SkeletifyModel {
-
-}
+export class SkeletifyModel {}

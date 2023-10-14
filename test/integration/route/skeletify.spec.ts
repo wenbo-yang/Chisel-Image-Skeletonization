@@ -1,3 +1,5 @@
+import { url } from '../utils';
+
 const axios = require('axios');
 const https = require('https');
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
@@ -8,8 +10,6 @@ const axiosClient = axios.create({
         rejectUnauthorized: false,
     }),
 });
-
-const url = 'https://localhost:3000';
 
 describe('skeletify request', () => {
     describe('GET /healthCheck', () => {
@@ -27,7 +27,7 @@ describe('skeletify request', () => {
             const response = await axiosClient.post(skeletifyUrl, {
                 name: 'name',
                 type: 'type',
-                data: Buffer.from('some base64 encoded string').toString('base64'),
+                data: Buffer.from('some base64 encoded string'),
             });
 
             expect(response.status).toEqual(200);
@@ -37,14 +37,13 @@ describe('skeletify request', () => {
 
         it('should respond with 200, after receiving an image', async () => {
             const sampleImageUrl = './test/integration/data/running_man.png';
-            const data = await fs.readFile (sampleImageUrl, 'binary');
+            const data = await fs.readFile(sampleImageUrl, 'binary');
             const arrayBuffer = Buffer.from(data);
 
-            console.log(arrayBuffer.buffer);
             const response = await axiosClient.post(skeletifyUrl, {
                 name: 'someImage',
                 type: 'png',
-                data: arrayBuffer.toString('base64'),
+                data: arrayBuffer,
             });
 
             expect(response.status).toEqual(200);
@@ -52,5 +51,4 @@ describe('skeletify request', () => {
             expect(response.data).toHaveProperty('strokes');
         });
     });
-
 });

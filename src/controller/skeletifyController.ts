@@ -12,7 +12,7 @@ export class SkeletifyController {
     public async skeletify(req: Request<{}, any, any, ParsedQs, Record<string, any>>): Promise<SkeletifyResponse> {
         // stubby
         const body = req.body as SkeletifyRequestBody;
-        console.log('data length:' + body.data.length);
+        console.log(body);
 
         return {
             skeleton: [],

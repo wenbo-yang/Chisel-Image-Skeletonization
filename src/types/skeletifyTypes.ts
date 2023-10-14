@@ -6,5 +6,5 @@ export interface SkeletifyResponse {
 export interface SkeletifyRequestBody {
     name: string;
     type: string;
-    data: string;
+    data: Buffer;
 }

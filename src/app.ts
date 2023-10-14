@@ -14,8 +14,8 @@ const credentials = { key: privateKey, cert: certificate };
 
 const app = express();
 
-app.use(express.json({limit: '50mb'}));
-app.use(express.text({limit: '50mb'}));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.text({ limit: '50mb' }));
 
 app.get('/healthCheck', (req, res) => {
     res.send('i am healthy!!!');
