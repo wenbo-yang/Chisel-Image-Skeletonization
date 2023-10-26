@@ -1,10 +1,6 @@
 import { BitMapBuffer } from '../utils/bitMapBuffer';
 
-export interface SkeletifyResponse {
-    imageType: string;
-    skeleton: Buffer;
-    strokes: Buffer[];
-}
+export type SkeletifyResponse = SkeletifiedImage;
 
 export interface SkeletifyRequestBody {
     name: string;

@@ -14,4 +14,8 @@ export class BitMapBuffer {
     get imageType() {
         return ImageType.BMP;
     }
+
+    get imageBuffer() {
+        return this.buffer;
+    }
 }

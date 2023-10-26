@@ -13,12 +13,8 @@ export class SkeletifyController {
     public async skeletify(req: Request<{}, any, any, ParsedQs, Record<string, any>>): Promise<SkeletifyResponse> {
         // stubby
         const body = req.body as SkeletifyRequestBody;
-        this.skeletifyModel.trySkeletify(body.type, body.data);
+        const skeletified = await this.skeletifyModel.trySkeletify(body.type, body.data);
 
-        return {
-            imageType: ImageType.PNG,
-            skeleton: Buffer.from('stubby'),
-            strokes: [],
-        };
+        return skeletified;
     }
 }
