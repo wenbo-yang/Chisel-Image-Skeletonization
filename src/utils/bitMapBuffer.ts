@@ -4,7 +4,13 @@ export enum ImageType {
     BMP = 'bmp',
 }
 
-export class BitMapBuffer extends Buffer {
+export class BitMapBuffer {
+    private buffer: Buffer;
+
+    constructor(buffer: Buffer) {
+        this.buffer = buffer;
+    }
+
     get imageType() {
         return ImageType.BMP;
     }

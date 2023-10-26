@@ -6,23 +6,19 @@ import { ImageType } from '../utils/bitMapBuffer';
 
 export class SkeletifyController {
     private skeletifyModel: SkeletifyModel;
-    constructor(skeletifyModel: SkeletifyModel) {
-        this.skeletifyModel = skeletifyModel;
+    constructor(skeletifyModel?: SkeletifyModel) {
+        this.skeletifyModel = skeletifyModel || new SkeletifyModel();
     }
 
     public async skeletify(req: Request<{}, any, any, ParsedQs, Record<string, any>>): Promise<SkeletifyResponse> {
         // stubby
         const body = req.body as SkeletifyRequestBody;
-        console.log(body);
+        this.skeletifyModel.trySkeletify(body.type, body.data);
 
         return {
             imageType: ImageType.PNG,
             skeleton: Buffer.from('stubby'),
             strokes: [],
         };
-    }
-
-    static makeController(): SkeletifyController {
-        return new SkeletifyController(new SkeletifyModel());
     }
 }

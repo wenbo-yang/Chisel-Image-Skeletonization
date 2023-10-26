@@ -1,8 +1,8 @@
 import express from 'express';
-import { SkeletifyController } from './controller/skeletifyController';
 import http from 'http';
 import https from 'https';
 import fs from 'fs';
+import { ControllerFactory } from './controller/controllerFactory';
 
 const httpsPort = 3000;
 const httpPort = 5000;
@@ -22,7 +22,7 @@ app.get('/healthCheck', (req, res) => {
 });
 
 app.post('/skeletify', async (req, res) => {
-    const skeletifyController = SkeletifyController.makeController();
+    const skeletifyController = ControllerFactory.makeSkeletifyController();
     const data = await skeletifyController.skeletify(req);
 
     res.send(data);
