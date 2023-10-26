@@ -14,5 +14,5 @@ export interface SkeletifyRequestBody {
 
 export interface SkeletifiedImage {
     skeleton: BitMapBuffer;
-    strokes: BitMapBuffer;
+    strokes: BitMapBuffer[];
 }
