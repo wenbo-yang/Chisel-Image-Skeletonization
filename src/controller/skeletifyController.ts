@@ -2,6 +2,7 @@ import { Request } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 import { SkeletifyModel } from '../model/skeletifyModel';
 import { SkeletifyRequestBody, SkeletifyResponse } from '../types/skeletifyTypes';
+import { ImageType } from '../utils/bitMapBuffer';
 
 export class SkeletifyController {
     private skeletifyModel: SkeletifyModel;
@@ -15,7 +16,8 @@ export class SkeletifyController {
         console.log(body);
 
         return {
-            skeleton: [],
+            imageType: ImageType.PNG,
+            skeleton: Buffer.from('stubby'),
             strokes: [],
         };
     }
