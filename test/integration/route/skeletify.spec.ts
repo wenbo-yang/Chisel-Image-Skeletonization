@@ -2,7 +2,6 @@ import { url } from '../utils';
 import axios from 'axios';
 import https from 'https';
 import fs from 'fs/promises';
-import Jimp from 'jimp';
 
 const axiosClient = axios.create({
     httpsAgent: new https.Agent({
@@ -11,20 +10,6 @@ const axiosClient = axios.create({
 });
 
 describe('skeletify request', () => {
-    xdescribe('try ', () => {
-        it('test', async () => {
-            const sampleImageUrl = './test/integration/data/running_man.png';
-            const data = await fs.readFile(sampleImageUrl);
-            const arrayBuffer = Buffer.from(data);
-
-            const jimp = await Jimp.read(arrayBuffer);
-            const test = await jimp.getBufferAsync(Jimp.MIME_BMP);
-
-            console.log(arrayBuffer);
-            console.log(test);
-        });
-    });
-
     describe('GET /healthCheck', () => {
         it('should respond with 200', async () => {
             const response = await axiosClient.get(url + '/healthCheck');
