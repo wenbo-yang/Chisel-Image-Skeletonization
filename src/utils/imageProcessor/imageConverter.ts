@@ -6,9 +6,6 @@ export class ImageConverter {
         const jimp = await Jimp.read(Buffer.from(buffer));
         const data = await jimp.getBufferAsync(Jimp.MIME_BMP);
 
-        console.log(buffer);
-        console.log(data);
-
         return new BitMapBuffer(data);
     }
 }

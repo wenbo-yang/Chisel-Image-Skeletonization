@@ -1,5 +1,4 @@
 import { SkeletifiedImage } from '../types/skeletifyTypes';
-import { BitMapBuffer } from '../utils/bitMapBuffer';
 import { ImageConverter } from '../utils/imageProcessor/imageConverter';
 
 export class SkeletifyModel {
@@ -12,8 +11,9 @@ export class SkeletifyModel {
         const bitmapImage = await this.imageConverter.convertToBMP(data);
 
         return {
-            skeleton: new BitMapBuffer(data),
-            strokes: [new BitMapBuffer(data)],
+            imageType: bitmapImage.imageType,
+            skeleton: bitmapImage.imageBuffer,
+            strokes: [ bitmapImage.imageBuffer ],
         };
     }
 }

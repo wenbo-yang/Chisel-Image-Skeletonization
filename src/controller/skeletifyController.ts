@@ -13,7 +13,7 @@ export class SkeletifyController {
     public async skeletify(req: Request<{}, any, any, ParsedQs, Record<string, any>>): Promise<SkeletifyResponse> {
         // stubby
         const body = req.body as SkeletifyRequestBody;
-        const skeletified = await this.skeletifyModel.trySkeletify(Buffer.from(body.data));
+        const skeletified = await this.skeletifyModel.trySkeletify(Buffer.from(body.data, 'base64'));
 
         return skeletified;
     }

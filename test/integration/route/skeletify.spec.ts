@@ -2,6 +2,7 @@ import { url } from '../utils';
 import axios from 'axios';
 import https from 'https';
 import fs from 'fs/promises';
+import { SkeletifyResponse } from '../../../src/types/skeletifyTypes'
 
 const axiosClient = axios.create({
     httpsAgent: new https.Agent({
@@ -26,8 +27,6 @@ describe('skeletify request', () => {
             const data = await fs.readFile(sampleImageUrl);
             const arrayBuffer = Buffer.from(data);
 
-            console.log(arrayBuffer);
-
             const response = await axiosClient.post(skeletifyUrl, {
                 name: 'someImage',
                 type: 'png',
@@ -37,6 +36,22 @@ describe('skeletify request', () => {
             expect(response.status).toEqual(200);
             expect(response.data).toHaveProperty('skeleton');
             expect(response.data).toHaveProperty('strokes');
+        });
+
+        it('should respond with 200 and response with image buffer data ', async () => {
+            const sampleImageUrl = './test/integration/data/running_man.png';
+            const data = await fs.readFile(sampleImageUrl);
+            const arrayBuffer = Buffer.from(data).toString('base64');
+
+            const response = await axiosClient.post<SkeletifyResponse>(skeletifyUrl, {
+                name: 'someImage',
+                type: 'png',
+                data: arrayBuffer,
+            });
+
+            await fs.writeFile('./test/integration/data/running_man_bitmap.bmp', Buffer.from(response.data.skeleton, 'base64'), { flag: 'w+' })
+
+            expect(response.data.skeleton).toBeDefined();
         });
     });
 });

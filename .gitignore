@@ -132,3 +132,6 @@ dist
 
 # package-lock
 package-lock.json
+
+# ignore test bitmap
+*test.bmp
