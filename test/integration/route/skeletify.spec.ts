@@ -3,6 +3,7 @@ import axios from 'axios';
 import https from 'https';
 import fs from 'fs/promises';
 import { SkeletifyResponse } from '../../../src/types/skeletifyTypes'
+import { ungzip } from 'node-gzip';
 
 const axiosClient = axios.create({
     httpsAgent: new https.Agent({
@@ -34,6 +35,7 @@ describe('skeletify request', () => {
             });
 
             expect(response.status).toEqual(200);
+            expect(response.data.compression).toEqual('gzip');
             expect(response.data).toHaveProperty('skeleton');
             expect(response.data).toHaveProperty('strokes');
         });
@@ -46,11 +48,12 @@ describe('skeletify request', () => {
             const response = await axiosClient.post<SkeletifyResponse>(skeletifyUrl, {
                 name: 'someImage',
                 type: 'png',
+                compression: 'gzip',
                 data: arrayBuffer,
             });
 
-            await fs.writeFile('./test/integration/data/running_man_bitmap.bmp', Buffer.from(response.data.skeleton, 'base64'), { flag: 'w+' })
-
+            const unzipped = await ungzip(Buffer.from(response.data.skeleton, 'base64'));
+            await fs.writeFile('./test/integration/data/running_man_bitmap_test.bmp', unzipped, { flag: 'w+' })
             expect(response.data.skeleton).toBeDefined();
         });
     });

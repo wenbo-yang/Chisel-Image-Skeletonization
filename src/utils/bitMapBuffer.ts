@@ -5,17 +5,17 @@ export enum ImageType {
 }
 
 export class BitMapBuffer {
-    private buffer: string;
+    private buffer: Buffer;
 
     constructor(buffer: Buffer) {
-        this.buffer = Buffer.from(buffer).toString('base64');
+        this.buffer = buffer;
     }
 
     get imageType(): string {
         return ImageType.BMP;
     }
 
-    get imageBuffer(): string {
+    get imageBuffer(): Buffer {
         return this.buffer;
     }
 }
