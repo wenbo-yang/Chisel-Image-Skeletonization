@@ -11,9 +11,17 @@ export class ImageConverter {
 
     public async convertAndResizeToBMP(buffer: Buffer): Promise<BitMapBuffer> {
         const jimp = await Jimp.read(Buffer.from(buffer));
-        jimp.resize(this.config.imageHeight, this.config.imageWidth);
+        const ratio = jimp.getHeight() / jimp.getWidth();
+
+        if ( ratio > 1 ) {
+            jimp.resize(Math.floor(this.config.imageWidth/ratio), this.config.imageHeight);
+        }
+        else {
+            jimp.resize(this.config.imageWidth, Math.floor(this.config.imageHeight * ratio));
+        }
+            
         const data = await jimp.getBufferAsync(Jimp.MIME_BMP);
 
-        return new BitMapBuffer(data);
+        return new BitMapBuffer(data, this.config.imageHeight, this.config.imageWidth);
     }
 }

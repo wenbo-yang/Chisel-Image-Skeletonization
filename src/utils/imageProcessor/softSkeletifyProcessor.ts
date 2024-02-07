@@ -10,6 +10,8 @@ export class SoftSkeletifyProcessor implements SkeletifyProcessor {
     }
 
     public async thinning(bitMapBuffer: BitMapBuffer): Promise<BitMapBuffer> {
-        throw new Error('Method not implemented.');
+        console.log(bitMapBuffer.imageBuffer);
+
+        return bitMapBuffer;
     }
 }
