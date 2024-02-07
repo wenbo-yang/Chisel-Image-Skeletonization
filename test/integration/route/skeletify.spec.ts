@@ -2,7 +2,7 @@ import { url } from '../utils';
 import axios from 'axios';
 import https from 'https';
 import fs from 'fs/promises';
-import { SkeletifyResponse } from '../../../src/types/skeletifyTypes'
+import { SkeletifyResponse } from '../../../src/types/skeletifyTypes';
 import { ungzip } from 'node-gzip';
 
 const axiosClient = axios.create({
@@ -53,7 +53,7 @@ describe('skeletify request', () => {
             });
 
             const unzipped = await ungzip(Buffer.from(response.data.skeleton, 'base64'));
-            await fs.writeFile('./test/integration/data/running_man_bitmap_test.bmp', unzipped, { flag: 'w+' })
+            await fs.writeFile('./test/integration/data/running_man_bitmap_test.bmp', unzipped, { flag: 'w+' });
             expect(response.data.skeleton).toBeDefined();
         });
     });

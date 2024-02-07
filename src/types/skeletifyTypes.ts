@@ -1,3 +1,5 @@
+import { BitMapBuffer } from '../utils/bitMapBuffer';
+
 export interface SkeletifyRequestBody {
     name: string;
     type: string;
@@ -15,5 +17,19 @@ export interface SkeletifiedImage {
 export type SkeletifyResponse = SkeletifiedImage;
 
 export enum COMPRESSION {
-    GZIP = 'gzip'
+    GZIP = 'gzip',
+}
+
+export interface SkeletifyProcessor {
+    thinning(bitMapBuffer: BitMapBuffer): Promise<BitMapBuffer>;
+}
+
+import { Config } from '../config';
+
+export class RuleSet {
+    private config: Config;
+
+    constructor(config?: Config) {
+        this.config = config || new Config();
+    }
 }

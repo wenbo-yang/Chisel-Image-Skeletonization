@@ -1,4 +1,4 @@
 export class Config {
-    public imageHeight = 400;
-    public imageWidth = 400;
+    public imageHeight = 200;
+    public imageWidth = 200;
 }
