@@ -20,7 +20,7 @@ export class ImageConverter {
             jimp.resize(this.config.imageWidth, Math.floor(this.config.imageHeight * ratio));
         }
             
-        const data = await jimp.getBufferAsync(Jimp.MIME_BMP);
+        const data = await jimp.grayscale().getBufferAsync(Jimp.MIME_BMP);
 
         return new BitMapBuffer(data, this.config.imageHeight, this.config.imageWidth);
     }

@@ -2,6 +2,7 @@ import { Config } from '../../config';
 import { SkeletifyProcessor } from '../../types/skeletifyTypes';
 import { BitMapBuffer } from '../bitMapBuffer';
 
+
 export class SoftSkeletifyProcessor implements SkeletifyProcessor {
     private config: Config;
 
@@ -10,7 +11,7 @@ export class SoftSkeletifyProcessor implements SkeletifyProcessor {
     }
 
     public async thinning(bitMapBuffer: BitMapBuffer): Promise<BitMapBuffer> {
-        console.log(bitMapBuffer.imageBuffer);
+        // console.log(bitMapBuffer.imageBuffer);
 
         return bitMapBuffer;
     }
