@@ -9,7 +9,6 @@ export class BitMapBuffer {
     private height: number;
     private width: number;
 
-
     constructor(buffer: Buffer, imageHeight: number, imageWidth: number) {
         this.buffer = buffer;
         this.height = imageHeight;

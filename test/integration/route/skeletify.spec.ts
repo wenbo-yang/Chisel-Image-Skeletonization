@@ -4,7 +4,7 @@ import https from 'https';
 import fs from 'fs/promises';
 import { SkeletifyResponse } from '../../../src/types/skeletifyTypes';
 import { ungzip } from 'node-gzip';
-import { decode } from "bmp-js";
+import { decode } from 'bmp-js';
 import { Config } from '../../../src/config';
 import { unzip } from 'zlib';
 
@@ -61,7 +61,8 @@ describe('skeletify request', () => {
             expect(response.data.grayScale).toBeDefined();
         });
 
-        it('should convert running man image expected array list', async() => {
+        it('should convert running man image expected array list', async () => {
+            // prettier-ignore
             const expectedImage = 
             '000000000000000000000000000000000000000000' + '\n' +
             '000000000000000000000000000000000000000000' + '\n' +
@@ -126,36 +127,34 @@ describe('skeletify request', () => {
             });
 
             const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
-            
+
             const bmpData = decode(unzipped);
 
             let index = 0;
             let output = '';
 
-            for(let i = 0; i < bmpData.height; i++) {
+            for (let i = 0; i < bmpData.height; i++) {
                 const row: number[] = [];
                 for (let j = 0; j < bmpData.width; j++) {
-                    
                     if (i === 0 || i === bmpData.height - 1 || j === 0 || j === bmpData.width - 1) {
                         row.push(0);
-                    } 
-                    else if (bmpData.data[index + 1] > new Config().grayScaleWhiteThreshold) { 
-                        row.push(0); 
-                    } 
-                    else if (bmpData.data[index + 1] <= new Config().grayScaleWhiteThreshold) {
+                    } else if (bmpData.data[index + 1] > new Config().grayScaleWhiteThreshold) {
+                        row.push(0);
+                    } else if (bmpData.data[index + 1] <= new Config().grayScaleWhiteThreshold) {
                         row.push(1);
-                    } 
+                    }
 
                     index += 4;
                 }
 
-                output = (output + row.join('') + '\n');
+                output = output + row.join('') + '\n';
             }
-            
+
             expect(output).toEqual(expectedImage);
         });
 
         it('should receive mat with expected skeleton matrix ', async () => {
+            // prettier-ignore
             const expectedSkeleton = 
             '000000000000000000000000000000000000000000' + '\n' +
             '000000000000000000000000000000000000000000' + '\n' +
@@ -222,7 +221,7 @@ describe('skeletify request', () => {
             const skeleton = response.data.skeleton;
             let output = '';
             for (let i = 0; i < skeleton.length; i++) {
-                output += skeleton[i].join("") + '\n';
+                output += skeleton[i].join('') + '\n';
             }
 
             expect(response.data.skeleton).toBeDefined();
