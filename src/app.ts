@@ -22,10 +22,15 @@ app.get('/healthCheck', (req, res) => {
 });
 
 app.post('/skeletify', async (req, res) => {
-    const skeletifyController = ControllerFactory.makeSkeletifyController();
-    const data = await skeletifyController.skeletify(req);
+    try {
+        const skeletifyController = ControllerFactory.makeSkeletifyController();
+        const data = await skeletifyController.skeletify(req);
 
-    res.send(data);
+        res.send(data);
+    } catch (e) {
+        console.log((e as Error).message);
+        res.send(e).status(500);
+    }
 });
 
 const httpServer = http.createServer(app);

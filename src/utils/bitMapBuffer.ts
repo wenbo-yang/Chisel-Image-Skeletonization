@@ -6,9 +6,13 @@ export enum ImageType {
 
 export class BitMapBuffer {
     private buffer: Buffer;
+    private height: number;
+    private width: number;
 
-    constructor(buffer: Buffer) {
+    constructor(buffer: Buffer, imageHeight: number, imageWidth: number) {
         this.buffer = buffer;
+        this.height = imageHeight;
+        this.width = imageWidth;
     }
 
     get imageType(): string {
@@ -17,5 +21,13 @@ export class BitMapBuffer {
 
     get imageBuffer(): Buffer {
         return this.buffer;
+    }
+
+    get imageHeight(): number {
+        return this.height;
+    }
+
+    get imageWidth(): number {
+        return this.width;
     }
 }
