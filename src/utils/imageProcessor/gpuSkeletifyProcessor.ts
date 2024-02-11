@@ -9,7 +9,7 @@ export class GpuSkeletifyProcessor implements SkeletifyProcessor {
         this.config = config || new Config();
     }
 
-    public async thinning(bitMapBuffer: BitMapBuffer): Promise<BitMapBuffer> {
+    public async thinning(bitMapBuffer: BitMapBuffer): Promise<Array<number[]>> {
         throw new Error('Method not implemented.');
     }
 }

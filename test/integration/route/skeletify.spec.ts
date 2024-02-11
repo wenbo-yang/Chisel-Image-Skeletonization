@@ -5,8 +5,8 @@ import fs from 'fs/promises';
 import { SkeletifyResponse } from '../../../src/types/skeletifyTypes';
 import { ungzip } from 'node-gzip';
 import { decode } from "bmp-js";
-
-
+import { Config } from '../../../src/config';
+import { unzip } from 'zlib';
 
 const axiosClient = axios.create({
     httpsAgent: new https.Agent({
@@ -40,6 +40,7 @@ describe('skeletify request', () => {
             expect(response.status).toEqual(200);
             expect(response.data.compression).toEqual('gzip');
             expect(response.data).toHaveProperty('skeleton');
+            expect(response.data).toHaveProperty('grayScale');
             expect(response.data).toHaveProperty('strokes');
         });
 
@@ -55,9 +56,9 @@ describe('skeletify request', () => {
                 data: arrayBuffer,
             });
 
-            const unzipped = await ungzip(Buffer.from(response.data.skeleton, 'base64'));
+            const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
             await fs.writeFile('./test/integration/data/running_man_bitmap_test.bmp', unzipped, { flag: 'w+' });
-            expect(response.data.skeleton).toBeDefined();
+            expect(response.data.grayScale).toBeDefined();
         });
 
         it('should convert running man image expected array list', async() => {
@@ -124,7 +125,7 @@ describe('skeletify request', () => {
                 data: arrayBuffer,
             });
 
-            const unzipped = await ungzip(Buffer.from(response.data.skeleton, 'base64'));
+            const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
             
             const bmpData = decode(unzipped);
 
@@ -135,12 +136,16 @@ describe('skeletify request', () => {
                 const row: number[] = [];
                 for (let j = 0; j < bmpData.width; j++) {
                     
-                    if (bmpData.data[index + 1] > 250) { 
+                    if (i === 0 || i === bmpData.height - 1 || j === 0 || j === bmpData.width - 1) {
+                        row.push(0);
+                    } 
+                    else if (bmpData.data[index + 1] > new Config().grayScaleWhiteThreshold) { 
                         row.push(0); 
                     } 
-                    else {
+                    else if (bmpData.data[index + 1] <= new Config().grayScaleWhiteThreshold) {
                         row.push(1);
                     } 
+
                     index += 4;
                 }
 
@@ -148,6 +153,80 @@ describe('skeletify request', () => {
             }
             
             expect(output).toEqual(expectedImage);
+        });
+
+        it('should receive mat with expected skeleton matrix ', async () => {
+            const expectedSkeleton = 
+            '000000000000000000000000000000000000000000' + '\n' +
+            '000000000000000000000000000000000000000000' + '\n' +
+            '000000000000000000000000000000000000000000' + '\n' +
+            '000000000000000000000000000000000000000000' + '\n' +
+            '000000000000000000000000000000000000000000' + '\n' +
+            '000000000000000000000000000000000000000000' + '\n' +
+            '000000000000000000000000000000000000000000' + '\n' +
+            '000000000000000000000000000000000000000000' + '\n' +
+            '000000000000000000000100000000000000000000' + '\n' +
+            '000000000000000000000100000000000000000000' + '\n' +
+            '000000000000000000000100000000000000000000' + '\n' +
+            '000000000000000000000100000000000010000000' + '\n' +
+            '000000000000000000000100000000000010000000' + '\n' +
+            '000000000000000000000100000000000010000000' + '\n' +
+            '000000000000000000000100000000000010000000' + '\n' +
+            '000000000000000000001000000000000010000000' + '\n' +
+            '000000000000000000001000000000000110000000' + '\n' +
+            '000000000001111111111000000000001100000000' + '\n' +
+            '000000000111000000010111111111110000000000' + '\n' +
+            '000000001100000000010000000000000000000000' + '\n' +
+            '000000001000000000010000000000000000000000' + '\n' +
+            '000000001000000000010000000000000000000000' + '\n' +
+            '000000010000000000010000000000000000000000' + '\n' +
+            '000000000000000000100000000000000000000000' + '\n' +
+            '000000000000000000100000000000000000000000' + '\n' +
+            '000000000000000000100000000000000000000000' + '\n' +
+            '000000000000000000100000000000000000000000' + '\n' +
+            '000000000000000000100000000000000000000000' + '\n' +
+            '000000000000000000100000000000000000000000' + '\n' +
+            '000000000000000000100000000000000000000000' + '\n' +
+            '000000000000000001110000000000000000000000' + '\n' +
+            '000000000000000010001100000000000000000000' + '\n' +
+            '000001000000000010000011100000000000000000' + '\n' +
+            '000000111111111100000000110000000000000000' + '\n' +
+            '000000000000000000000000011000000000000000' + '\n' +
+            '000000000000000000000000001000000000000000' + '\n' +
+            '000000000000000000000000000100000000000000' + '\n' +
+            '000000000000000000000000000100000000000000' + '\n' +
+            '000000000000000000000000000100000000000000' + '\n' +
+            '000000000000000000000000000100000000000000' + '\n' +
+            '000000000000000000000000000100000000000000' + '\n' +
+            '000000000000000000000000000000000000000000' + '\n' +
+            '000000000000000000000000000000000000000000' + '\n' +
+            '000000000000000000000000000000000000000000' + '\n' +
+            '000000000000000000000000000000000000000000' + '\n' +
+            '000000000000000000000000000000000000000000' + '\n' +
+            '000000000000000000000000000000000000000000' + '\n' +
+            '000000000000000000000000000000000000000000' + '\n' +
+            '000000000000000000000000000000000000000000' + '\n' +
+            '000000000000000000000000000000000000000000' + '\n';
+
+            const sampleImageUrl = './test/integration/data/running_man.png';
+            const data = await fs.readFile(sampleImageUrl);
+            const arrayBuffer = Buffer.from(data).toString('base64');
+
+            const response = await axiosClient.post<SkeletifyResponse>(skeletifyUrl, {
+                name: 'someImage',
+                type: 'png',
+                compression: 'gzip',
+                data: arrayBuffer,
+            });
+
+            const skeleton = response.data.skeleton;
+            let output = '';
+            for (let i = 0; i < skeleton.length; i++) {
+                output += skeleton[i].join("") + '\n';
+            }
+
+            expect(response.data.skeleton).toBeDefined();
+            expect(output).toEqual(expectedSkeleton);
         });
     });
 });

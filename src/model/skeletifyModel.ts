@@ -14,15 +14,17 @@ export class SkeletifyModel {
     public async trySkeletify(data: Buffer): Promise<SkeletifiedImage> {
         const bitmapImage = await this.imageConverter.convertAndResizeToBMP(data);
         const skeleton = await this.skeletifier.skeletifyImage(bitmapImage);
-
+        // const convertTo1DArray: number[] = [].concat.apply([], skeleton as any[]);
         const compressed = Buffer.from(await this.compress(bitmapImage.imageBuffer)).toString('base64');
-        const strokes = Buffer.from(await this.compress(skeleton.imageBuffer)).toString('base64');
 
         return {
             compression: COMPRESSION.GZIP,
             imageType: bitmapImage.imageType,
-            skeleton: compressed,
-            strokes: [strokes],
+            grayScale: compressed,
+            skeleton: skeleton,
+            skeletonImageHeight: skeleton.length,
+            skeletonImageWidth: skeleton[0].length,
+            strokes: [compressed],
         };
     }
 

@@ -10,7 +10,10 @@ export interface SkeletifyRequestBody {
 export interface SkeletifiedImage {
     imageType: string;
     compression: string;
-    skeleton: string;
+    grayScale: string;
+    skeletonImageHeight: number;
+    skeletonImageWidth: number;
+    skeleton: number[][];
     strokes: string[];
 }
 
@@ -21,7 +24,7 @@ export enum COMPRESSION {
 }
 
 export interface SkeletifyProcessor {
-    thinning(bitMapBuffer: BitMapBuffer): Promise<BitMapBuffer>;
+    thinning(bitMapBuffer: BitMapBuffer): Promise<Array<number[]>>;
 }
 
 import { Config } from '../config';
@@ -32,4 +35,9 @@ export class RuleSet {
     constructor(config?: Config) {
         this.config = config || new Config();
     }
+}
+
+export interface Point {
+    r: number;
+    c: number;
 }

@@ -12,7 +12,7 @@ export class Skeletifier {
         this.skeletifyProcessor = skeletifyProcessor || new SoftSkeletifyProcessor(config);
     }
 
-    public async skeletifyImage(bitmapImage: BitMapBuffer): Promise<BitMapBuffer> {
+    public async skeletifyImage(bitmapImage: BitMapBuffer): Promise<Array<number[]>> {
         return await this.skeletifyProcessor.thinning(bitmapImage);
     }
 }
