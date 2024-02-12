@@ -5,12 +5,13 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "npx tsc",
-        "start": "npx tsc & node dist/app.js",
+        "start": "node dist/app.js",
         "watch": "npx tsc --watch",
         "prettier-ts": "prettier --parser typescript --config prettier.json --write \"**/*.ts\"",
         "prettier-json": "prettier --config prettier.json --write \"**/*.json\"",
         "prettier": "run-s prettier-ts prettier-json",
-        "integration-test": "npx jest --runInBand --./test/integration"
+        "stop": "pkill -f node",
+        "integration-test": "(run-s start & (sleep 0.1 && npx jest --runInBand --./test/integration)) && run-s stop"
     },
     "keywords": [],
     "author": "",
