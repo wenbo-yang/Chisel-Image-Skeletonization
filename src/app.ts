@@ -28,7 +28,7 @@ app.post('/skeletify', async (req, res) => {
 
         res.send(data);
     } catch (e) {
-        console.log((e as Error).message);
+        console.log((e as Error));
         res.send(e).status(500);
     }
 });

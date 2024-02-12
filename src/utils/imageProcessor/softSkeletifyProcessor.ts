@@ -12,10 +12,11 @@ export class SoftSkeletifyProcessor implements SkeletifyProcessor {
     }
 
     public async thinning(bitMapBuffer: BitMapBuffer): Promise<Array<number[]>> {
+        // const startTime = Date.now();
         let mat = await matUtilities.convertDataToZeroOneMat(bitMapBuffer, this.config.grayScaleWhiteThreshold);
-        
         mat = zsThinning(mat);
-
+        const endTime = Date.now();
+        // console.log("Done: took " + (endTime - startTime) + "ms");
         return mat;
     }
 }
