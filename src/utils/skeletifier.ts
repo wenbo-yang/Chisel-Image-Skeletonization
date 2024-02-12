@@ -2,6 +2,7 @@ import { Config } from '../config';
 import { BitMapBuffer } from './bitMapBuffer';
 import { SkeletifyProcessor } from '../types/skeletifyTypes';
 import { SoftSkeletifyProcessor } from './imageProcessor/softSkeletifyProcessor';
+import { GpuSkeletifyProcessor } from './imageProcessor/gpuSkeletifyProcessor';
 
 export class Skeletifier {
     private config: Config;
