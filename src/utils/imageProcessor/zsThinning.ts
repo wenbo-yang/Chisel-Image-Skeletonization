@@ -84,7 +84,7 @@ export function isNotOnTheEdge(mat: number[][], i: number, j: number) {
     return true;
 }
 
-export function getNeighborValues(mat: number[][], r: number, c: number): any {
+export function getNeighborValues(mat: number[][], r: number, c: number): number[] {
     return [mat[r - 1][c], mat[r - 1][c + 1], mat[r][c + 1], mat[r + 1][c + 1], mat[r + 1][c], mat[r + 1][c - 1], mat[r][c - 1], mat[r - 1][c - 1]];
 }
 
@@ -97,7 +97,7 @@ export function sumOfNeighborsInRemovalRange(neighbors: number[]): boolean {
     return sum <= 6 && sum >= 2;
 }
 
-export function numberOfTransitionsIsInRemovalRange(neighbors: number[]) {
+export function numberOfTransitionsIsInRemovalRange(neighbors: number[]): boolean {
     const trans = (neighbors[0] === 0 && neighbors[1] === 1 ? 1 : 0) + (neighbors[1] === 0 && neighbors[2] === 1 ? 1 : 0) + (neighbors[2] === 0 && neighbors[3] === 1 ? 1 : 0) + (neighbors[3] === 0 && neighbors[4] === 1 ? 1 : 0) + (neighbors[4] === 0 && neighbors[5] === 1 ? 1 : 0) + (neighbors[5] === 0 && neighbors[6] === 1 ? 1 : 0) + (neighbors[6] === 0 && neighbors[7] === 1 ? 1 : 0) + (neighbors[7] === 0 && neighbors[0] === 1 ? 1 : 0);
 
     return trans === 1;

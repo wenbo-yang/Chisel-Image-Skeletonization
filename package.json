@@ -10,7 +10,7 @@
         "prettier-ts": "prettier --parser typescript --config prettier.json --write \"**/*.ts\"",
         "prettier-json": "prettier --config prettier.json --write \"**/*.json\"",
         "prettier": "run-s prettier-ts prettier-json",
-        "integration-test": "npx jest --runInBand --./test/integration"
+        "integration-test": "npx jest --runInBand --./test/integration -t 'test123'"
     },
     "keywords": [],
     "author": "",
