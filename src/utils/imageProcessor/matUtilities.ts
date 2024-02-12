@@ -2,7 +2,6 @@ import { decode } from 'bmp-js';
 import { Point } from '../../types/skeletifyTypes';
 import { BitMapBuffer } from '../bitMapBuffer';
 
-
 export async function convertDataToZeroOneMat(bitMapBuffer: BitMapBuffer, grayScaleWhiteThreshold: number): Promise<number[][]> {
     const bmpData = decode(bitMapBuffer.imageBuffer);
     const mat: number[][] = [];
@@ -38,4 +37,3 @@ export function logMat(mat: Array<number[]>) {
 
     console.log(output);
 }
-
