@@ -122,3 +122,4 @@ export function removePoints(mat: number[][], pointsToRemove: Point[]): void {
         mat[p.r][p.c] = 0;
     });
 }
+
