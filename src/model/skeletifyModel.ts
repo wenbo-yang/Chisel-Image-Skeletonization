@@ -2,6 +2,7 @@ import { gzip } from 'node-gzip';
 import { COMPRESSION, SkeletifiedImage } from '../types/skeletifyTypes';
 import { ImageConverter } from '../utils/imageConverter/imageConverter';
 import { Skeletifier } from '../utils/skeletifier';
+import { logMat } from '../utils/imageProcessor/matUtilities';
 
 export class SkeletifyModel {
     private imageConverter: ImageConverter;
