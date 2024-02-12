@@ -1,6 +1,9 @@
 import { Config } from '../../config';
 import { SkeletifyProcessor } from '../../types/skeletifyTypes';
 import { BitMapBuffer } from '../bitMapBuffer';
+import { GPU } from 'gpu.js';
+import { convertDataToZeroOneMat } from './matUtilities';
+import { zsThinning } from './zsThinning';
 
 export class GpuSkeletifyProcessor implements SkeletifyProcessor {
     private config: Config;
@@ -10,6 +13,10 @@ export class GpuSkeletifyProcessor implements SkeletifyProcessor {
     }
 
     public async thinning(bitMapBuffer: BitMapBuffer): Promise<Array<number[]>> {
-        throw new Error('Method not implemented.');
+        let mat = await convertDataToZeroOneMat(bitMapBuffer, this.config.grayScaleWhiteThreshold);
+        const thinning = new GPU().createKernel(zsThinning).setOutput([mat.length, mat[0].length]);
+        mat = thinning(mat) as number[][];
+
+        return mat;
     }
 }
