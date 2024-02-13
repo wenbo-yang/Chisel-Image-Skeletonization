@@ -1,20 +1,20 @@
 import { gzip } from 'node-gzip';
-import { COMPRESSION, SkeletifiedImage } from '../types/skeletifyTypes';
+import { COMPRESSION, SkeletonizedImage } from '../types/skeletonizeTypes';
 import { ImageConverter } from '../utils/imageConverter/imageConverter';
-import { Skeletifier } from '../utils/skeletifier';
+import { Skeletonizer } from '../utils/skeletonizer';
 import { logMat } from '../utils/imageProcessor/matUtilities';
 
-export class SkeletifyModel {
+export class SkeletonizeModel {
     private imageConverter: ImageConverter;
-    private skeletifier: Skeletifier;
-    constructor(imageConverter?: ImageConverter, skeletifier?: Skeletifier) {
+    private skeletonizer: Skeletonizer;
+    constructor(imageConverter?: ImageConverter, skeletonizer?: Skeletonizer) {
         this.imageConverter = imageConverter || new ImageConverter();
-        this.skeletifier = skeletifier || new Skeletifier();
+        this.skeletonizer = skeletonizer || new Skeletonizer();
     }
 
-    public async trySkeletify(data: Buffer): Promise<SkeletifiedImage> {
+    public async tryskeletonize(data: Buffer): Promise<SkeletonizedImage> {
         const bitmapImage = await this.imageConverter.convertAndResizeToBMP(data);
-        const skeleton = await this.skeletifier.skeletifyImage(bitmapImage);
+        const skeleton = await this.skeletonizer.skeletonizeImage(bitmapImage);
         const compressed = Buffer.from(await this.compress(bitmapImage.imageBuffer)).toString('base64');
         const compressedSkeleton = Buffer.from(await this.compress(Buffer.from(skeleton))).toString('base64')
 ;

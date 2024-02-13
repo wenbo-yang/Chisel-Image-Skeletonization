@@ -1,10 +1,10 @@
 import { Config } from '../../config';
 import { BitMapBuffer } from '../bitMapBuffer';
-import { SkeletifyProcessor } from '../../types/skeletifyTypes';
+import { SkeletonizeProcessor } from '../../types/skeletonizeTypes';
 import * as matUtilities from './matUtilities';
 import { zsThinning } from './zsThinning';
 
-export class SoftSkeletifyProcessor implements SkeletifyProcessor {
+export class SoftSkeletonizeProcessor implements SkeletonizeProcessor {
     private config: Config;
 
     constructor(config?: Config) {

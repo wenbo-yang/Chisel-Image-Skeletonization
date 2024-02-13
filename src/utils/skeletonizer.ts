@@ -1,19 +1,19 @@
 import { Config } from '../config';
 import { BitMapBuffer } from './bitMapBuffer';
-import { SkeletifyProcessor } from '../types/skeletifyTypes';
-import { SoftSkeletifyProcessor } from './imageProcessor/softSkeletifyProcessor';
+import { SkeletonizeProcessor } from '../types/skeletonizeTypes';
+import { SoftSkeletonizeProcessor } from './imageProcessor/softSkeletonizeProcessor';
 
-export class Skeletifier {
+export class Skeletonizer {
     private config: Config;
-    private skeletifyProcessor: SkeletifyProcessor;
+    private skeletonizeProcessor: SkeletonizeProcessor;
 
-    constructor(config?: Config, skeletifyProcessor?: SkeletifyProcessor) {
+    constructor(config?: Config, skeletonizeProcessor?: SkeletonizeProcessor) {
         this.config = config || new Config();
-        this.skeletifyProcessor = skeletifyProcessor || new SoftSkeletifyProcessor(config);
+        this.skeletonizeProcessor = skeletonizeProcessor || new SoftSkeletonizeProcessor(config);
     }
 
-    public async skeletifyImage(bitmapImage: BitMapBuffer): Promise<string> {
-        const skeleton = await this.skeletifyProcessor.thinning(bitmapImage);
+    public async skeletonizeImage(bitmapImage: BitMapBuffer): Promise<string> {
+        const skeleton = await this.skeletonizeProcessor.thinning(bitmapImage);
 
         return this.convert2DMatToString(skeleton);
 

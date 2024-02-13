@@ -1,7 +1,7 @@
-import { SkeletifyController } from './skeletifyController';
+import { SkeletonizeController } from './skeletonizeController';
 
 export class ControllerFactory {
-    static makeSkeletifyController(): SkeletifyController {
-        return new SkeletifyController();
+    static makeSkeletonizeController(): SkeletonizeController {
+        return new SkeletonizeController();
     }
 }

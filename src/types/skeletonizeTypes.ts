@@ -1,13 +1,13 @@
 import { BitMapBuffer } from '../utils/bitMapBuffer';
 
-export interface SkeletifyRequestBody {
+export interface SkeletonizeRequestBody {
     name: string;
     type: string;
     compression: string;
     data: string;
 }
 
-export interface SkeletifiedImage {
+export interface SkeletonizedImage {
     imageType: string;
     compression: string;
     grayScale: string;
@@ -15,13 +15,13 @@ export interface SkeletifiedImage {
     strokes: string[];
 }
 
-export type SkeletifyResponse = SkeletifiedImage;
+export type SkeletonizeResponse = SkeletonizedImage;
 
 export enum COMPRESSION {
     GZIP = 'gzip',
 }
 
-export interface SkeletifyProcessor {
+export interface SkeletonizeProcessor {
     thinning(bitMapBuffer: BitMapBuffer): Promise<Array<number[]>>;
 }
 

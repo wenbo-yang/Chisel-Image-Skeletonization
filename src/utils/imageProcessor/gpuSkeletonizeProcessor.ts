@@ -1,5 +1,5 @@
 import { Config } from '../../config';
-import { Point, SkeletifyProcessor } from '../../types/skeletifyTypes';
+import { Point, SkeletonizeProcessor } from '../../types/skeletonizeTypes';
 import { BitMapBuffer } from '../bitMapBuffer';
 import { GPU } from 'gpu.js';
 import { convertDataToZeroOneMat, logMat } from './matUtilities';
@@ -10,7 +10,7 @@ import { constants } from 'buffer';
 // WILL NOT USE THIS for V1
 // Manipulating matrix element breaks GPU rule... this is algorithm is not going to work.
 
-export class GpuSkeletifyProcessor implements SkeletifyProcessor {
+export class GpuSkeletonizeProcessor implements SkeletonizeProcessor {
     private config: Config;
 
     constructor(config?: Config) {

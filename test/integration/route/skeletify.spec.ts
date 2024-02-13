@@ -2,11 +2,10 @@ import { url } from '../utils';
 import axios from 'axios';
 import https from 'https';
 import fs from 'fs/promises';
-import { SkeletifyResponse } from '../../../src/types/skeletifyTypes';
+import { SkeletonizeResponse } from '../../../src/types/skeletonizeTypes';
 import { ungzip } from 'node-gzip';
 import { decode } from 'bmp-js';
 import { Config } from '../../../src/config';
-import { unzip } from 'zlib';
 
 const axiosClient = axios.create({
     httpsAgent: new https.Agent({
@@ -14,7 +13,7 @@ const axiosClient = axios.create({
     }),
 });
 
-describe('skeletify request', () => {
+describe('skeletonize request', () => {
     describe('GET /healthCheck', () => {
         it('should respond with 200', async () => {
             const response = await axiosClient.get(url + '/healthCheck');
@@ -24,14 +23,14 @@ describe('skeletify request', () => {
         });
     });
 
-    describe('POST /skeletify', () => {
-        const skeletifyUrl = url + '/skeletify';
+    describe('POST /skeletonize', () => {
+        const skeletonizeUrl = url + '/skeletonize';
         it('should respond with 200, after receiving an image', async () => {
             const sampleImageUrl = './test/integration/data/running_man.png';
             const data = await fs.readFile(sampleImageUrl);
             const arrayBuffer = Buffer.from(data);
 
-            const response = await axiosClient.post(skeletifyUrl, {
+            const response = await axiosClient.post(skeletonizeUrl, {
                 name: 'someImage',
                 type: 'png',
                 data: arrayBuffer,
@@ -49,7 +48,7 @@ describe('skeletify request', () => {
             const data = await fs.readFile(sampleImageUrl);
             const arrayBuffer = Buffer.from(data).toString('base64');
 
-            const response = await axiosClient.post<SkeletifyResponse>(skeletifyUrl, {
+            const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
                 type: 'png',
                 compression: 'gzip',
@@ -119,7 +118,7 @@ describe('skeletify request', () => {
             const data = await fs.readFile(sampleImageUrl);
             const arrayBuffer = Buffer.from(data).toString('base64');
 
-            const response = await axiosClient.post<SkeletifyResponse>(skeletifyUrl, {
+            const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
                 type: 'png',
                 compression: 'gzip',
@@ -210,7 +209,7 @@ describe('skeletify request', () => {
             const data = await fs.readFile(sampleImageUrl);
             const arrayBuffer = Buffer.from(data).toString('base64');
 
-            const response = await axiosClient.post<SkeletifyResponse>(skeletifyUrl, {
+            const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
                 type: 'png',
                 compression: 'gzip',

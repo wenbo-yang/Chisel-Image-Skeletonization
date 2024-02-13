@@ -21,10 +21,10 @@ app.get('/healthCheck', (req, res) => {
     res.send('i am healthy!!!');
 });
 
-app.post('/skeletify', async (req, res) => {
+app.post('/skeletonize', async (req, res) => {
     try {
-        const skeletifyController = ControllerFactory.makeSkeletifyController();
-        const data = await skeletifyController.skeletify(req);
+        const skeletonizeController = ControllerFactory.makeSkeletonizeController();
+        const data = await skeletonizeController.skeletonize(req);
 
         res.send(data);
     } catch (e) {
