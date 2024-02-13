@@ -61,7 +61,7 @@ describe('skeletify request', () => {
             expect(response.data.grayScale).toBeDefined();
         });
 
-        it('should convert running man image expected array list', async () => {
+        it('should convert running man image with expected array list', async () => {
             // prettier-ignore
             const expectedImage = 
             '000000000000000000000000000000000000000000' + '\n' +
@@ -113,7 +113,7 @@ describe('skeletify request', () => {
             '000000000000000000000000000000000000000000' + '\n' +
             '000000000000000000000000000000000000000000' + '\n' +
             '000000000000000000000000000000000000000000' + '\n' +
-            '000000000000000000000000000000000000000000' + '\n'
+            '000000000000000000000000000000000000000000' + '\n';
 
             const sampleImageUrl = './test/integration/data/running_man.png';
             const data = await fs.readFile(sampleImageUrl);
@@ -127,7 +127,6 @@ describe('skeletify request', () => {
             });
 
             const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
-
             const bmpData = decode(unzipped);
 
             let index = 0;
@@ -205,7 +204,7 @@ describe('skeletify request', () => {
             '000000000000000000000000000000000000000000' + '\n' +
             '000000000000000000000000000000000000000000' + '\n' +
             '000000000000000000000000000000000000000000' + '\n' +
-            '000000000000000000000000000000000000000000' + '\n';
+            '000000000000000000000000000000000000000000';
 
             const sampleImageUrl = './test/integration/data/running_man.png';
             const data = await fs.readFile(sampleImageUrl);
@@ -219,13 +218,9 @@ describe('skeletify request', () => {
             });
 
             const skeleton = response.data.skeleton;
-            let output = '';
-            for (let i = 0; i < skeleton.length; i++) {
-                output += skeleton[i].join('') + '\n';
-            }
-
+            const unzipped = Buffer.from(await ungzip(Buffer.from(skeleton, 'base64'))).toString();
             expect(response.data.skeleton).toBeDefined();
-            expect(output).toEqual(expectedSkeleton);
+            expect(unzipped).toEqual(expectedSkeleton);
         });
     });
 });
