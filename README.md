@@ -1,1 +1,1 @@
-# Chisel-Image-Skeletification
+# Chisel-Image-Skeletonization
