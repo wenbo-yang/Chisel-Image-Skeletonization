@@ -10,8 +10,8 @@
         "prettier-ts": "prettier --parser typescript --config prettier.json --write \"**/*.ts\"",
         "prettier-json": "prettier --config prettier.json --write \"**/*.json\"",
         "prettier": "run-s prettier-ts prettier-json",
-        "stop": "pkill -f node",
-        "integration-test": "(run-s start & (sleep 0.1 && npx jest --runInBand --./test/integration)) && run-s stop"
+        "stop": "pkill -f c-skeletonize",
+        "integration-test": "(concurrently 'run-s start' 'sleep 0.1 && npx jest --runInBand --./test/integration && run-s stop')"
     },
     "keywords": [],
     "author": "",
