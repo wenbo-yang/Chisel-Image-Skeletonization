@@ -16,8 +16,7 @@ export class SkeletonizeModel {
         const bitmapImage = await this.imageConverter.convertAndResizeToBMP(data);
         const skeleton = await this.skeletonizer.skeletonizeImage(bitmapImage);
         const compressed = Buffer.from(await this.compress(bitmapImage.imageBuffer)).toString('base64');
-        const compressedSkeleton = Buffer.from(await this.compress(Buffer.from(skeleton))).toString('base64')
-;
+        const compressedSkeleton = Buffer.from(await this.compress(Buffer.from(skeleton))).toString('base64');
         return {
             compression: COMPRESSION.GZIP,
             imageType: bitmapImage.imageType,
@@ -26,7 +25,7 @@ export class SkeletonizeModel {
             strokes: [compressed],
         };
     }
-    
+
     private async compress(data: Buffer): Promise<Buffer> {
         return await gzip(data);
     }
