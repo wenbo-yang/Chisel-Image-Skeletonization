@@ -3,6 +3,7 @@ import http from 'http';
 import https from 'https';
 import fs from 'fs';
 import { ControllerFactory } from './controller/controllerFactory';
+import { Config } from './config';
 
 const httpsPort = 3000;
 const httpPort = 5000;
@@ -11,6 +12,8 @@ const privateKey = fs.readFileSync('./certs/key.pem');
 const certificate = fs.readFileSync('./certs/cert.crt');
 
 const credentials = { key: privateKey, cert: certificate };
+
+process.title = new Config().shortName;
 
 const app = express();
 

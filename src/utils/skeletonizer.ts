@@ -16,7 +16,6 @@ export class Skeletonizer {
         const skeleton = await this.skeletonizeProcessor.thinning(bitmapImage);
 
         return this.convert2DMatToString(skeleton);
-
     }
 
     private convert2DMatToString(skeleton: number[][]): string {
@@ -31,6 +30,6 @@ export class Skeletonizer {
             }
         }
 
-        return output
+        return output;
     }
 }
