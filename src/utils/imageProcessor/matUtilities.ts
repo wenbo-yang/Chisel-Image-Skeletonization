@@ -1,5 +1,4 @@
 import { decode } from 'bmp-js';
-import { Point } from '../../types/skeletonizeTypes';
 import { BitMapBuffer } from '../bitMapBuffer';
 
 export async function convertDataToZeroOneMat(bitMapBuffer: BitMapBuffer, grayScaleWhiteThreshold: number): Promise<number[][]> {
@@ -36,4 +35,19 @@ export function logMat(mat: Array<number[]>) {
     }
 
     console.log(output);
+}
+
+export function convert2DMatToString(skeleton: number[][]): string {
+    let output = '';
+
+    for (let i = 0; i < skeleton.length; i++) {
+        for (let j = 0; j < skeleton[0].length; j++) {
+            output += skeleton[i][j].toString();
+        }
+        if (i != skeleton.length - 1) {
+            output += '\n';
+        }
+    }
+
+    return output;
 }

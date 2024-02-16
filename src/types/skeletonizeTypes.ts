@@ -12,7 +12,18 @@ export interface SkeletonizedImage {
     compression: string;
     grayScale: string;
     skeleton: string;
-    strokes: string[];
+    strokes: Strokes[];
+}
+
+export interface Strokes {
+    type: STROKETYPE;
+    offset: Point;
+    stroke: string;
+}
+
+export enum STROKETYPE {
+    CONTOUR = 'CONTOUR',
+    SINGLESTROKE = 'SINGLESTROKE',
 }
 
 export type SkeletonizeResponse = SkeletonizedImage;
@@ -22,7 +33,7 @@ export enum COMPRESSION {
 }
 
 export interface SkeletonizeProcessor {
-    thinning(bitMapBuffer: BitMapBuffer): Promise<Array<number[]>>;
+    thinning(binaryMat: Array<number[]>): Promise<Array<number[]>>;
 }
 
 export interface Point {

@@ -1,10 +1,7 @@
 import { Config } from '../../config';
 import { Point, SkeletonizeProcessor } from '../../types/skeletonizeTypes';
-import { BitMapBuffer } from '../bitMapBuffer';
 import { GPU } from 'gpu.js';
-import { convertDataToZeroOneMat, logMat } from './matUtilities';
 import { zsThinnigGetTargetPointsStep1, zsThinnigGetTargetPointsStep2, zsThinning } from './zsThinning';
-import { constants } from 'buffer';
 
 // NOTE: THIS IS NOT FASTER THAN CPU FOR OUR APPLICATION
 // WILL NOT USE THIS for V1
@@ -17,9 +14,9 @@ export class GpuSkeletonizeProcessor implements SkeletonizeProcessor {
         this.config = config || new Config();
     }
 
-    public async thinning(bitMapBuffer: BitMapBuffer): Promise<Array<number[]>> {
+    public async thinning(binaryMat: Array<number[]>): Promise<Array<number[]>> {
         // const startTime = Date.now();
-        let mat = await convertDataToZeroOneMat(bitMapBuffer, this.config.grayScaleWhiteThreshold);
+        let mat: number[][] = binaryMat.map((row) => row.slice());
         let removalMat: number[][] = Array<number[]>(mat.length)
             .fill([])
             .map(() => Array<number>(mat[0].length).fill(1));

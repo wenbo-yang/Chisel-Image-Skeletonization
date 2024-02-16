@@ -6,6 +6,7 @@ import { SkeletonizeResponse } from '../../../src/types/skeletonizeTypes';
 import { ungzip } from 'node-gzip';
 import { decode } from 'bmp-js';
 import { Config } from '../../../src/config';
+import { STROKETYPE } from '../../../src/types/skeletonizeTypes';
 
 const axiosClient = axios.create({
     httpsAgent: new https.Agent({
@@ -217,9 +218,72 @@ describe('skeletonize request', () => {
             });
 
             const skeleton = response.data.skeleton;
-            const unzipped = Buffer.from(await ungzip(Buffer.from(skeleton, 'base64'))).toString();
             expect(response.data.skeleton).toBeDefined();
-            expect(unzipped).toEqual(expectedSkeleton);
+            expect(skeleton).toEqual(expectedSkeleton);
+        });
+
+        it('should generate single contour  with expected contour matrix ', async () => {
+            // prettier-ignore
+            const expectedContour = 
+                '00000000000000000000000000000000000' + '\n' +
+                '00000000000000000111110000000000000' + '\n' +
+                '00000000000000011100010000000000000' + '\n' +
+                '00000000000000010000011000000000000' + '\n' +
+                '00000000000000110000001000000000000' + '\n' +
+                '00000000000000100000001000000000000' + '\n' +
+                '00000000000000110000011000000011100' + '\n' +
+                '00000000000000011100110000000110100' + '\n' +
+                '00000000000000000101100000000110100' + '\n' +
+                '00000000000000001101000000000010110' + '\n' +
+                '00000000000000001001000000000010010' + '\n' +
+                '00000000000000111001000000000010110' + '\n' +
+                '00000001111111100001000000011110100' + '\n' +
+                '00000111000000000001111111110001100' + '\n' +
+                '00001100011111110000000000000011000' + '\n' +
+                '00001001110000010111100000111110000' + '\n' +
+                '00011011000000010100111111100000000' + '\n' +
+                '00010010000000110100000000000000000' + '\n' +
+                '00010010000000100100000000000000000' + '\n' +
+                '00010110000000100100000000000000000' + '\n' +
+                '00011100000000100100000000000000000' + '\n' +
+                '00000000000000100100000000000000000' + '\n' +
+                '00000000000000100100000000000000000' + '\n' +
+                '00000000000001100100000000000000000' + '\n' +
+                '00000000000001000100000000000000000' + '\n' +
+                '00000000000011000110000000000000000' + '\n' +
+                '01110000000010000011100000000000000' + '\n' +
+                '01011000000010111000111000000000000' + '\n' +
+                '01001111111110101100001100000000000' + '\n' +
+                '01000000000000100111100110000000000' + '\n' +
+                '01100000000001100000110011000000000' + '\n' +
+                '00111111111111000000011001000000000' + '\n' +
+                '00000000000000000000001101000000000' + '\n' +
+                '00000000000000000000000101000000000' + '\n' +
+                '00000000000000000000001101000000000' + '\n' +
+                '00000000000000000000001001000000000' + '\n' +
+                '00000000000000000000001001000000000' + '\n' + 
+                '00000000000000000000001101100000000' + '\n' +
+                '00000000000000000000000111100000000' + '\n' +
+                '00000000000000000000000011000000000' + '\n' + 
+                '00000000000000000000000000000000000';
+
+            const sampleImageUrl = './test/integration/data/running_man.png';
+            const data = await fs.readFile(sampleImageUrl);
+            const arrayBuffer = Buffer.from(data).toString('base64');
+
+            const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
+                name: 'someImage',
+                type: 'png',
+                compression: 'gzip',
+                data: arrayBuffer,
+            });
+
+            const strokes = response.data.strokes;
+
+            expect(response.data.skeleton).toBeDefined();
+            expect(strokes.length).toEqual(1);
+            expect(strokes[0].stroke).toEqual(expectedContour);
+            expect(strokes[0].type).toEqual(STROKETYPE.CONTOUR);
         });
     });
 });
