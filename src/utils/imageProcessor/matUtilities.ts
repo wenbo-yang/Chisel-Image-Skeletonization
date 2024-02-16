@@ -1,5 +1,4 @@
 import { decode } from 'bmp-js';
-import { Point } from '../../types/skeletonizeTypes';
 import { BitMapBuffer } from '../bitMapBuffer';
 
 export async function convertDataToZeroOneMat(bitMapBuffer: BitMapBuffer, grayScaleWhiteThreshold: number): Promise<number[][]> {
