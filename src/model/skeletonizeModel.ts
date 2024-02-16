@@ -4,31 +4,35 @@ import { ImageConverter } from '../utils/imageConverter/imageConverter';
 import { Skeletonizer } from '../utils/skeletonizer';
 import { convertDataToZeroOneMat, logMat } from '../utils/imageProcessor/matUtilities';
 import { Config } from '../config';
+import { ContourTracer } from '../utils/contourTracer';
 
 export class SkeletonizeModel {
     private imageConverter: ImageConverter;
     private skeletonizer: Skeletonizer;
     private config: Config;
-    constructor(config?: Config, imageConverter?: ImageConverter, skeletonizer?: Skeletonizer, ) {
-        this.imageConverter = imageConverter || new ImageConverter();
-        this.skeletonizer = skeletonizer || new Skeletonizer();
+    private contourTracer: ContourTracer;
+    constructor(config?: Config, imageConverter?: ImageConverter, skeletonizer?: Skeletonizer, contourTracer?: ContourTracer) {
         this.config = config || new Config();
+        this.imageConverter = imageConverter || new ImageConverter(this.config);
+        this.skeletonizer = skeletonizer || new Skeletonizer(this.config);
+        this.contourTracer = contourTracer || new ContourTracer(this.config);
     }
 
     public async tryskeletonize(data: Buffer): Promise<SkeletonizedImage> {
         const bitmapImage = await this.imageConverter.convertAndResizeToBMP(data);
         const binaryMat = await convertDataToZeroOneMat(bitmapImage, this.config.grayScaleWhiteThreshold);
-        
+
+        const contours = await this.contourTracer.trace(binaryMat);
         const skeleton = await this.skeletonizer.skeletonizeImage(binaryMat);
-        
+
         const compressed = Buffer.from(await this.compress(bitmapImage.imageBuffer)).toString('base64');
-        const compressedSkeleton = Buffer.from(await this.compress(Buffer.from(skeleton))).toString('base64');
+
         return {
             compression: COMPRESSION.GZIP,
             imageType: bitmapImage.imageType,
             grayScale: compressed,
-            skeleton: compressedSkeleton,
-            strokes: [],
+            skeleton: skeleton,
+            strokes: contours,
         };
     }
 

@@ -1,5 +1,6 @@
 import { Config } from '../config';
 import { SkeletonizeProcessor } from '../types/skeletonizeTypes';
+import { convert2DMatToString } from './imageProcessor/matUtilities';
 import { SoftSkeletonizeProcessor } from './imageProcessor/softSkeletonizeProcessor';
 
 export class Skeletonizer {
@@ -14,21 +15,6 @@ export class Skeletonizer {
     public async skeletonizeImage(binaryMat: Array<number[]>): Promise<string> {
         const skeleton = await this.skeletonizeProcessor.thinning(binaryMat);
 
-        return this.convert2DMatToString(skeleton);
-    }
-
-    private convert2DMatToString(skeleton: number[][]): string {
-        let output = '';
-
-        for (let i = 0; i < skeleton.length; i++) {
-            for (let j = 0; j < skeleton[0].length; j++) {
-                output += skeleton[i][j].toString();
-            }
-            if (i != skeleton.length - 1) {
-                output += '\n';
-            }
-        }
-
-        return output;
+        return convert2DMatToString(skeleton);
     }
 }

@@ -14,7 +14,7 @@ export class SkeletonizeController {
         // stubby
         const body = req.body as SkeletonizeRequestBody;
         const skeletonized = await this.skeletonizeModel.tryskeletonize(Buffer.from(body.data, 'base64'));
-        
+
         return skeletonized;
     }
 }
