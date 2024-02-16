@@ -21,11 +21,8 @@ export class ContourTracer {
 
         for (let i = 0; i < islandContours.length; i++) {
             const offsets = this.getOffsets(islandContours[i]);
-
             const islandContourMat = this.mapIslandContour(offsets, islandContours[i]);
             const islandContourString = convert2DMatToString(islandContourMat);
-
-            console.log(islandContourString);
 
             strokes.push({ type: STROKETYPE.CONTOUR, offset: { r: offsets[0].r - 1, c: offsets[0].c - 1 }, stroke: islandContourString });
         }
