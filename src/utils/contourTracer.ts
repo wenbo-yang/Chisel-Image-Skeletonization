@@ -1,6 +1,6 @@
 import { Config } from '../config';
 import { Point, STROKETYPE, Strokes } from '../types/skeletonizeTypes';
-import { convert2DMatToString } from './imageProcessor/matUtilities';
+import { convert2DMatToString, generate2DMatrix, getOffsetsFromPointList, logMat } from './imageProcessor/matUtilities';
 
 export class ContourTracer {
     private config: Config;
@@ -20,7 +20,7 @@ export class ContourTracer {
         let strokes: Strokes[] = [];
 
         for (let i = 0; i < islandContours.length; i++) {
-            const offsets = this.getOffsets(islandContours[i]);
+            const offsets = getOffsetsFromPointList(islandContours[i]);
             const islandContourMat = this.mapIslandContour(offsets, islandContours[i]);
             const islandContourString = convert2DMatToString(islandContourMat);
 
@@ -31,9 +31,7 @@ export class ContourTracer {
     }
 
     private mapIslandContour(offsets: Point[], islandContour: Point[]): number[][] {
-        let islandContourMat: Array<Array<number>> = Array<Array<number>>(offsets[1].r - offsets[0].r + 3)
-            .fill([])
-            .map(() => Array<number>(offsets[1].c - offsets[0].c + 3).fill(0));
+        let islandContourMat: Array<Array<number>> = generate2DMatrix(offsets[1].r - offsets[0].r + 3, offsets[1].c - offsets[0].c + 3);
 
         for (let i = 0; i < islandContour.length; i++) {
             islandContourMat[islandContour[i].r - offsets[0].r + 1][islandContour[i].c - offsets[0].c + 1] = 1;
@@ -42,29 +40,8 @@ export class ContourTracer {
         return islandContourMat;
     }
 
-    private getOffsets(islandContour: Point[]): Point[] {
-        let top = Number.MAX_VALUE;
-        let bottom = Number.MIN_VALUE;
-        let right = Number.MIN_VALUE;
-        let left = Number.MAX_VALUE;
-
-        for (let i = 0; i < islandContour.length; i++) {
-            top = Math.min(islandContour[i].r, top);
-            bottom = Math.max(islandContour[i].r, bottom);
-            left = Math.min(islandContour[i].c, left);
-            right = Math.max(islandContour[i].c, right);
-        }
-
-        return [
-            { r: top, c: left },
-            { r: bottom, c: right },
-        ];
-    }
-
     private findIslands(mat: number[][]): Array<Point[]> {
-        const visited: number[][] = Array<number[]>(mat.length)
-            .fill([])
-            .map(() => Array<number>(mat[0].length).fill(0));
+        const visited: number[][] = generate2DMatrix(mat.length, mat[0].length);
 
         const row = mat.length;
         const col = mat[0].length;
@@ -75,7 +52,7 @@ export class ContourTracer {
             for (let j = 0; j < col; j++) {
                 if (mat[i][j] === 1 && !this.hasVisited(visited, i, j)) {
                     const islandContour: Point[] = [];
-                    this.mapIsland(mat, visited, islandContour, i, j);
+                    this.mapIslandLoop(mat, visited, islandContour, i, j);
                     islandContours.push(islandContour);
                 }
             }
@@ -84,7 +61,7 @@ export class ContourTracer {
         return islandContours;
     }
 
-    private mapIsland(mat: number[][], visited: number[][], islandContour: Point[], r: number, c: number) {
+    private mapIslandRecursion(mat: number[][], visited: number[][], islandContour: Point[], r: number, c: number) {
         if (this.hasVisited(visited, r, c) || mat[r][c] === 0) {
             return;
         }
@@ -98,65 +75,100 @@ export class ContourTracer {
         }
 
         for (let i = 0; i < neighbors.length; i++) {
-            this.mapIsland(mat, visited, islandContour, neighbors[i].r, neighbors[i].c);
+            this.mapIslandRecursion(mat, visited, islandContour, neighbors[i].r, neighbors[i].c);
         }
-
-        return;
     }
 
-    private getValidNeighbors(mat: number[][], visited: number[][], r: number, c: number) {
-        const neighbors: Point[] = [];
+    private mapIslandLoop(mat: number[][], visited: number[][], islandContour: Point[], r: number, c: number) {
+        const stack: Point[] = [];
+        stack.push({ r, c });
 
-        if (this.isInBound(mat, r - 1, c) && !this.hasVisited(visited, r - 1, c)) {
-            neighbors.push({ r: r - 1, c }); // up
-        }
-        if (this.isInBound(mat, r + 1, c) && !this.hasVisited(visited, r + 1, c)) {
-            neighbors.push({ r: r + 1, c }); // down
-        }
-        if (this.isInBound(mat, r, c - 1) && !this.hasVisited(visited, r, c - 1)) {
-            neighbors.push({ r, c: c - 1 }); // left
-        }
-        if (this.isInBound(mat, r, c + 1) && !this.hasVisited(visited, r, c + 1)) {
-            neighbors.push({ r, c: c + 1 }); // right
-        }
+        while (stack.length !== 0) {
+            const currentPoint = stack.pop() || { r: 0, c: 0 };
+            if (this.hasVisited(visited, currentPoint.r, currentPoint.c) || mat[currentPoint.r][currentPoint.c] === 0) {
+                continue;
+            }
 
+            visited[currentPoint.r][currentPoint.c] = 1;
+            const neighbors = this.getValidNeighbors(mat, visited, currentPoint.r, currentPoint.c);
+
+            // now mat[r][c] === 1 test 8 neighbors to see if at least 1 is 0
+            if (this.cellIsOnContour(mat, currentPoint.r, currentPoint.c)) {
+                islandContour.push(currentPoint);
+            }
+
+            stack.push(...neighbors);
+        }
+    }
+
+    private getValidNeighbors(mat: number[][], visited: number[][], r: number, c: number): Point[] {
+        // hasVisited is double tested in loop or recursion code, since we have white edges, isInBound always returns true
+        const neighbors = Array<Point>(4);
+        neighbors.push(
+            ...[
+                { r: r - 1, c },
+                { r: r + 1, c },
+                { r, c: c - 1 },
+                { r, c: c + 1 },
+            ],
+        );
         return neighbors;
+
+        // const neighbors: Point[] = [];
+
+        // if (this.isInBound(mat, r - 1, c) && !this.hasVisited(visited, r - 1, c)) {
+        //     neighbors.push({ r: r - 1, c }); // up
+        // }
+        // if (this.isInBound(mat, r + 1, c) && !this.hasVisited(visited, r + 1, c)) {
+        //     neighbors.push({ r: r + 1, c }); // down
+        // }
+        // if (this.isInBound(mat, r, c - 1) && !this.hasVisited(visited, r, c - 1)) {
+        //     neighbors.push({ r, c: c - 1 }); // left
+        // }
+        // if (this.isInBound(mat, r, c + 1) && !this.hasVisited(visited, r, c + 1)) {
+        //     neighbors.push({ r, c: c + 1 }); // right
+        // }
+
+        // return neighbors;
     }
 
     private cellIsOnContour(mat: number[][], r: number, c: number) {
-        if (this.isInBound(mat, r - 1, c) && mat[r - 1][c] === 0) {
-            return true; // up
-        }
+        // given we have white borders, isInBound will always return true;
+        return mat[r - 1][c] + mat[r + 1][c] + mat[r][c - 1] + mat[r][c + 1] + mat[r - 1][c - 1] + mat[r - 1][c + 1] + mat[r + 1][c - 1] + mat[r + 1][c + 1] < 8;
 
-        if (this.isInBound(mat, r + 1, c) && mat[r + 1][c] === 0) {
-            return true; // down
-        }
+        // if (this.isInBound(mat, r - 1, c) && mat[r - 1][c] === 0) {
+        //     return true; // up
+        // }
 
-        if (this.isInBound(mat, r, c - 1) && mat[r][c - 1] === 0) {
-            return true; // left
-        }
+        // if (this.isInBound(mat, r + 1, c) && mat[r + 1][c] === 0) {
+        //     return true; // down
+        // }
 
-        if (this.isInBound(mat, r, c + 1) && mat[r][c + 1] === 0) {
-            return true; // right
-        }
+        // if (this.isInBound(mat, r, c - 1) && mat[r][c - 1] === 0) {
+        //     return true; // left
+        // }
 
-        if (this.isInBound(mat, r - 1, c - 1) && mat[r - 1][c - 1] === 0) {
-            return true; // top left
-        }
+        // if (this.isInBound(mat, r, c + 1) && mat[r][c + 1] === 0) {
+        //     return true; // right
+        // }
 
-        if (this.isInBound(mat, r - 1, c + 1) && mat[r - 1][c + 1] === 0) {
-            return true; // top right
-        }
+        // if (this.isInBound(mat, r - 1, c - 1) && mat[r - 1][c - 1] === 0) {
+        //     return true; // top left
+        // }
 
-        if (this.isInBound(mat, r + 1, c - 1) && mat[r + 1][c - 1] === 0) {
-            return true; // bottom left
-        }
+        // if (this.isInBound(mat, r - 1, c + 1) && mat[r - 1][c + 1] === 0) {
+        //     return true; // top right
+        // }
 
-        if (this.isInBound(mat, r + 1, c + 1) && mat[r + 1][c + 1] === 0) {
-            return true; // bottom right
-        }
+        // if (this.isInBound(mat, r + 1, c - 1) && mat[r + 1][c - 1] === 0) {
+        //     return true; // bottom left
+        // }
 
-        return false;
+        // if (this.isInBound(mat, r + 1, c + 1) && mat[r + 1][c + 1] === 0) {
+        //     return true; // bottom right
+        // }
+
+        // return false;
     }
 
     private hasVisited(visited: number[][], r: number, c: number): boolean {

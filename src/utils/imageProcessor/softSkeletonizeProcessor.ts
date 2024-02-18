@@ -15,7 +15,7 @@ export class SoftSkeletonizeProcessor implements SkeletonizeProcessor {
         // const startTime = Date.now();
         let mat: number[][] = binaryMat.map((row) => row.slice());
         mat = zsThinning(mat);
-        const endTime = Date.now();
+        // const endTime = Date.now();
         // console.log("Done: took " + (endTime - startTime) + "ms");
         return mat;
     }
