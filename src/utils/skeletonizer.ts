@@ -1,6 +1,6 @@
 import { Config } from '../config';
 import { SkeletonizeProcessor } from '../types/skeletonizeTypes';
-import { convert2DMatToString } from './imageProcessor/matUtilities';
+import { convert2DMatToString, logMat } from './imageProcessor/matUtilities';
 import { SoftSkeletonizeProcessor } from './imageProcessor/softSkeletonizeProcessor';
 
 export class Skeletonizer {
