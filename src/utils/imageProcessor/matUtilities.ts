@@ -55,9 +55,7 @@ export function convert2DMatToString(skeleton: number[][]): string {
 
 export function trimBinaryMat(mat: number[][]): number[][] {
     const offsets = getOffsetsFromMat(mat);
-    let trimmedMat: Array<Array<number>> = Array<Array<number>>(offsets[1].r - offsets[0].r + 3)
-        .fill([])
-        .map(() => Array<number>(offsets[1].c - offsets[0].c + 3).fill(0));
+    let trimmedMat: Array<Array<number>> = generate2DMatrix(offsets[1].r - offsets[0].r + 3, offsets[1].c - offsets[0].c + 3);
 
     for (let i = 1; i < trimmedMat.length - 1; i++) {
         for (let j = 1; j < trimmedMat[0].length - 1; j++) {
@@ -108,4 +106,9 @@ export function getOffsetsFromMat(mat: number[][]): Point[] {
         { r: top, c: left },
         { r: bottom, c: right },
     ];
+}
+
+export function generate2DMatrix(numRows: number, numCols: number, initValue: number = 0): number[][] {
+    // prettier-ignore
+    return Array<Array<number>>(numRows).fill([]).map(() => Array<number>(numCols).fill(initValue));
 }

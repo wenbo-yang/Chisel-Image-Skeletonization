@@ -2,6 +2,7 @@ import { Config } from '../../config';
 import { Point, SkeletonizeProcessor } from '../../types/skeletonizeTypes';
 import { GPU } from 'gpu.js';
 import { zsThinnigGetTargetPointsStep1, zsThinnigGetTargetPointsStep2, zsThinning } from './zsThinning';
+import { generate2DMatrix } from './matUtilities';
 
 // NOTE: THIS IS NOT FASTER THAN CPU FOR OUR APPLICATION
 // WILL NOT USE THIS for V1
@@ -17,9 +18,7 @@ export class GpuSkeletonizeProcessor implements SkeletonizeProcessor {
     public async thinning(binaryMat: Array<number[]>): Promise<Array<number[]>> {
         // const startTime = Date.now();
         let mat: number[][] = binaryMat.map((row) => row.slice());
-        let removalMat: number[][] = Array<number[]>(mat.length)
-            .fill([])
-            .map(() => Array<number>(mat[0].length).fill(1));
+        let removalMat: number[][] = generate2DMatrix(mat.length, mat[0].length, 1);
 
         const gpu = new GPU();
         const gpuRemovalMat = gpu
@@ -61,16 +60,14 @@ export class GpuSkeletonizeProcessor implements SkeletonizeProcessor {
     }
 
     private convertToNumberMat(mat: number[][]) {
-        const retMat: number[][] = Array<number[]>(mat.length)
-            .fill([])
-            .map(() => Array<number>(mat[0].length).fill(0));
+        const numberMat: number[][] = generate2DMatrix(mat.length, mat[0].length);
 
         for (let i = 0; i < mat.length; i++) {
             for (let j = 0; j < mat[0].length; j++) {
-                retMat[i][j] = mat[i][j];
+                numberMat[i][j] = mat[i][j];
             }
         }
 
-        return retMat;
+        return numberMat;
     }
 }

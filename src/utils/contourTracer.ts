@@ -1,6 +1,6 @@
 import { Config } from '../config';
 import { Point, STROKETYPE, Strokes } from '../types/skeletonizeTypes';
-import { convert2DMatToString, getOffsetsFromPointList, logMat } from './imageProcessor/matUtilities';
+import { convert2DMatToString, generate2DMatrix, getOffsetsFromPointList, logMat } from './imageProcessor/matUtilities';
 
 export class ContourTracer {
     private config: Config;
@@ -31,9 +31,7 @@ export class ContourTracer {
     }
 
     private mapIslandContour(offsets: Point[], islandContour: Point[]): number[][] {
-        let islandContourMat: Array<Array<number>> = Array<Array<number>>(offsets[1].r - offsets[0].r + 3)
-            .fill([])
-            .map(() => Array<number>(offsets[1].c - offsets[0].c + 3).fill(0));
+        let islandContourMat: Array<Array<number>> = generate2DMatrix(offsets[1].r - offsets[0].r + 3, offsets[1].c - offsets[0].c + 3);
 
         for (let i = 0; i < islandContour.length; i++) {
             islandContourMat[islandContour[i].r - offsets[0].r + 1][islandContour[i].c - offsets[0].c + 1] = 1;
@@ -43,9 +41,7 @@ export class ContourTracer {
     }
 
     private findIslands(mat: number[][]): Array<Point[]> {
-        const visited: number[][] = Array<number[]>(mat.length)
-            .fill([])
-            .map(() => Array<number>(mat[0].length).fill(0));
+        const visited: number[][] = generate2DMatrix(mat.length, mat[0].length);
 
         const row = mat.length;
         const col = mat[0].length;

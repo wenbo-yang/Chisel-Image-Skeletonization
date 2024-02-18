@@ -3,6 +3,7 @@
     "singleQuote": true,
     "endOfLine": "lf",
     "printWidth": 500,
+    "singleAttributePerLine": false,
     "overrides": [
         {
             "files": "*.json",
