@@ -1,6 +1,6 @@
 import { Config } from '../config';
 import { Point, STROKETYPE, Strokes } from '../types/skeletonizeTypes';
-import { convert2DMatToString, generate2DMatrix, getOffsetsFromPointList, logMat } from './imageProcessor/matUtilities';
+import { convert2DMatToString, generate2DMatrix, getOffsetsFromPointList } from './imageProcessor/matUtilities';
 
 export class PerimeterTracer {
     private config: Config;
@@ -83,6 +83,10 @@ export class PerimeterTracer {
         }
     }
 
+    private hasVisited(visited: number[][], r: number, c: number): boolean {
+        return visited[r][c] === 1;
+    }
+
     private getValidNeighbors(mat: number[][], visited: number[][], r: number, c: number): Point[] {
         // hasVisited is double tested in loop or recursion code, since we have white edges, isInBound always returns true
         // prettier-ignore
@@ -143,10 +147,6 @@ export class PerimeterTracer {
         // }
 
         // return false;
-    }
-
-    private hasVisited(visited: number[][], r: number, c: number): boolean {
-        return visited[r][c] === 1;
     }
 
     // private mapIslandRecursion(mat: number[][], visited: number[][], islandPerimeter: Point[], r: number, c: number) {

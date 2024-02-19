@@ -2,7 +2,7 @@ import { gzip } from 'node-gzip';
 import { COMPRESSION, SkeletonizedImage } from '../types/skeletonizeTypes';
 import { ImageConverter } from '../utils/imageConverter/imageConverter';
 import { Skeletonizer } from '../utils/skeletonizer';
-import { convertDataToZeroOneMat, logMat } from '../utils/imageProcessor/matUtilities';
+import { convertDataToZeroOneMat } from '../utils/imageProcessor/matUtilities';
 import { Config } from '../config';
 import { PerimeterTracer } from '../utils/perimeterTracer';
 
