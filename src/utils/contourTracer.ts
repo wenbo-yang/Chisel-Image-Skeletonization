@@ -61,23 +61,6 @@ export class ContourTracer {
         return islandContours;
     }
 
-    private mapIslandRecursion(mat: number[][], visited: number[][], islandContour: Point[], r: number, c: number) {
-        if (this.hasVisited(visited, r, c) || mat[r][c] === 0) {
-            return;
-        }
-
-        visited[r][c] = 1;
-        const neighbors = this.getValidNeighbors(mat, visited, r, c);
-
-        if (this.isCellOnContour(mat, r, c)) {
-            islandContour.push({ r, c });
-        }
-
-        for (let i = 0; i < neighbors.length; i++) {
-            this.mapIslandRecursion(mat, visited, islandContour, neighbors[i].r, neighbors[i].c);
-        }
-    }
-
     private mapIslandLoop(mat: number[][], visited: number[][], islandContour: Point[], r: number, c: number) {
         const stack: Point[] = [];
         stack.push({ r, c });
@@ -166,10 +149,27 @@ export class ContourTracer {
         return visited[r][c] === 1;
     }
 
-    private isInBound(mat: number[][], r: number, c: number) {
-        const row = mat.length;
-        const col = mat[0].length;
+    // private mapIslandRecursion(mat: number[][], visited: number[][], islandContour: Point[], r: number, c: number) {
+    //     if (this.hasVisited(visited, r, c) || mat[r][c] === 0) {
+    //         return;
+    //     }
 
-        return r < row && c < col && r >= 0 && c >= 0;
-    }
+    //     visited[r][c] = 1;
+    //     const neighbors = this.getValidNeighbors(mat, visited, r, c);
+
+    //     if (this.isCellOnContour(mat, r, c)) {
+    //         islandContour.push({ r, c });
+    //     }
+
+    //     for (let i = 0; i < neighbors.length; i++) {
+    //         this.mapIslandRecursion(mat, visited, islandContour, neighbors[i].r, neighbors[i].c);
+    //     }
+    // }
+
+    // private isInBound(mat: number[][], r: number, c: number) {
+    //     const row = mat.length;
+    //     const col = mat[0].length;
+
+    //     return r < row && c < col && r >= 0 && c >= 0;
+    // }
 }

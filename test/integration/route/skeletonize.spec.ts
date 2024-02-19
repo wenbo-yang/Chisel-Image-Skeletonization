@@ -152,7 +152,7 @@ describe('skeletonize request', () => {
             expect(output).toEqual(expectedImage);
         });
 
-        it('should receive mat with expected skeleton matrix ', async () => {
+        it('test123 should receive mat with expected skeleton matrix ', async () => {
             // prettier-ignore
             const expectedSkeleton = 
                 '00000000000000000000000000000000000' + '\n' +
