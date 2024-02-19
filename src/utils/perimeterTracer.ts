@@ -1,8 +1,8 @@
 import { Config } from '../config';
 import { Point, STROKETYPE, Strokes } from '../types/skeletonizeTypes';
-import { convert2DMatToString, generate2DMatrix, getOffsetsFromPointList, logMat } from './imageProcessor/matUtilities';
+import { convert2DMatToString, generate2DMatrix, getOffsetsFromPointList } from './imageProcessor/matUtilities';
 
-export class ContourTracer {
+export class PerimeterTracer {
     private config: Config;
 
     constructor(config?: Config) {
@@ -10,34 +10,34 @@ export class ContourTracer {
     }
 
     public async trace(binaryMat: Array<number[]>): Promise<Strokes[]> {
-        const islandContours = this.findIslands(binaryMat);
-        const contourStrokes = this.applyIslandContoursToMat(islandContours);
+        const islandPerimeters = this.findIslands(binaryMat);
+        const perimeterStrokes = this.applyIslandPerimetersToMat(islandPerimeters);
 
-        return contourStrokes;
+        return perimeterStrokes;
     }
 
-    private async applyIslandContoursToMat(islandContours: Point[][]): Promise<Strokes[]> {
+    private async applyIslandPerimetersToMat(islandPerimeters: Point[][]): Promise<Strokes[]> {
         let strokes: Strokes[] = [];
 
-        for (let i = 0; i < islandContours.length; i++) {
-            const offsets = getOffsetsFromPointList(islandContours[i]);
-            const islandContourMat = this.mapIslandContour(offsets, islandContours[i]);
-            const islandContourString = convert2DMatToString(islandContourMat);
+        for (let i = 0; i < islandPerimeters.length; i++) {
+            const offsets = getOffsetsFromPointList(islandPerimeters[i]);
+            const islandPerimeterMat = this.mapIslandPerimeter(offsets, islandPerimeters[i]);
+            const islandPerimeterString = convert2DMatToString(islandPerimeterMat);
 
-            strokes.push({ type: STROKETYPE.CONTOUR, offset: { r: offsets[0].r - 1, c: offsets[0].c - 1 }, stroke: islandContourString });
+            strokes.push({ type: STROKETYPE.PERIMETER, offset: { r: offsets[0].r - 1, c: offsets[0].c - 1 }, stroke: islandPerimeterString });
         }
 
         return strokes;
     }
 
-    private mapIslandContour(offsets: Point[], islandContour: Point[]): number[][] {
-        let islandContourMat: Array<Array<number>> = generate2DMatrix(offsets[1].r - offsets[0].r + 3, offsets[1].c - offsets[0].c + 3);
+    private mapIslandPerimeter(offsets: Point[], islandPerimeter: Point[]): number[][] {
+        let islandPerimeterMat: Array<Array<number>> = generate2DMatrix(offsets[1].r - offsets[0].r + 3, offsets[1].c - offsets[0].c + 3);
 
-        for (let i = 0; i < islandContour.length; i++) {
-            islandContourMat[islandContour[i].r - offsets[0].r + 1][islandContour[i].c - offsets[0].c + 1] = 1;
+        for (let i = 0; i < islandPerimeter.length; i++) {
+            islandPerimeterMat[islandPerimeter[i].r - offsets[0].r + 1][islandPerimeter[i].c - offsets[0].c + 1] = 1;
         }
 
-        return islandContourMat;
+        return islandPerimeterMat;
     }
 
     private findIslands(mat: number[][]): Array<Point[]> {
@@ -46,22 +46,22 @@ export class ContourTracer {
         const row = mat.length;
         const col = mat[0].length;
 
-        const islandContours: Array<Point[]> = [];
+        const islandPerimeters: Array<Point[]> = [];
 
         for (let i = 0; i < row; i++) {
             for (let j = 0; j < col; j++) {
                 if (mat[i][j] === 1 && !this.hasVisited(visited, i, j)) {
-                    const islandContour: Point[] = [];
-                    this.mapIslandLoop(mat, visited, islandContour, i, j);
-                    islandContours.push(islandContour);
+                    const islandPerimeter: Point[] = [];
+                    this.mapIslandLoop(mat, visited, islandPerimeter, i, j);
+                    islandPerimeters.push(islandPerimeter);
                 }
             }
         }
 
-        return islandContours;
+        return islandPerimeters;
     }
 
-    private mapIslandLoop(mat: number[][], visited: number[][], islandContour: Point[], r: number, c: number) {
+    private mapIslandLoop(mat: number[][], visited: number[][], islandPerimeter: Point[], r: number, c: number) {
         const stack: Point[] = [];
         stack.push({ r, c });
 
@@ -75,12 +75,16 @@ export class ContourTracer {
             const neighbors = this.getValidNeighbors(mat, visited, currentPoint.r, currentPoint.c);
 
             // now mat[r][c] === 1 test 8 neighbors to see if at least 1 is 0
-            if (this.isCellOnContour(mat, currentPoint.r, currentPoint.c)) {
-                islandContour.push(currentPoint);
+            if (this.isCellOnPerimeter(mat, currentPoint.r, currentPoint.c)) {
+                islandPerimeter.push(currentPoint);
             }
 
             stack.push(...neighbors);
         }
+    }
+
+    private hasVisited(visited: number[][], r: number, c: number): boolean {
+        return visited[r][c] === 1;
     }
 
     private getValidNeighbors(mat: number[][], visited: number[][], r: number, c: number): Point[] {
@@ -106,7 +110,7 @@ export class ContourTracer {
         // return neighbors;
     }
 
-    private isCellOnContour(mat: number[][], r: number, c: number): boolean {
+    private isCellOnPerimeter(mat: number[][], r: number, c: number): boolean {
         // given we have white borders, isInBound will always return true;
         return mat[r - 1][c] + mat[r + 1][c] + mat[r][c - 1] + mat[r][c + 1] + mat[r - 1][c - 1] + mat[r - 1][c + 1] + mat[r + 1][c - 1] + mat[r + 1][c + 1] < 8;
 
@@ -145,11 +149,7 @@ export class ContourTracer {
         // return false;
     }
 
-    private hasVisited(visited: number[][], r: number, c: number): boolean {
-        return visited[r][c] === 1;
-    }
-
-    // private mapIslandRecursion(mat: number[][], visited: number[][], islandContour: Point[], r: number, c: number) {
+    // private mapIslandRecursion(mat: number[][], visited: number[][], islandPerimeter: Point[], r: number, c: number) {
     //     if (this.hasVisited(visited, r, c) || mat[r][c] === 0) {
     //         return;
     //     }
@@ -157,12 +157,12 @@ export class ContourTracer {
     //     visited[r][c] = 1;
     //     const neighbors = this.getValidNeighbors(mat, visited, r, c);
 
-    //     if (this.isCellOnContour(mat, r, c)) {
-    //         islandContour.push({ r, c });
+    //     if (this.isCellOnPerimeter(mat, r, c)) {
+    //         islandPerimeter.push({ r, c });
     //     }
 
     //     for (let i = 0; i < neighbors.length; i++) {
-    //         this.mapIslandRecursion(mat, visited, islandContour, neighbors[i].r, neighbors[i].c);
+    //         this.mapIslandRecursion(mat, visited, islandPerimeter, neighbors[i].r, neighbors[i].c);
     //     }
     // }
 
