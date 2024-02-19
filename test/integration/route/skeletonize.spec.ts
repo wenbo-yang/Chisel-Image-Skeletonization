@@ -213,9 +213,9 @@ describe('skeletonize request', () => {
             expect(skeleton).toEqual(expectedSkeleton);
         });
 
-        it('should generate single contour  with expected contour matrix ', async () => {
+        it('should generate single perimeter  with expected perimeter matrix ', async () => {
             // prettier-ignore
-            const expectedContour = 
+            const expectedPerimeter = 
                 '0000000000000000000000000000000000' + '\n' +
                 '0000000000000011111110000000000000' + '\n' +
                 '0000000000000010000011000000000000' + '\n' +
@@ -272,8 +272,8 @@ describe('skeletonize request', () => {
 
             expect(response.data.skeleton).toBeDefined();
             expect(strokes.length).toEqual(1);
-            expect(strokes[0].stroke).toEqual(expectedContour);
-            expect(strokes[0].type).toEqual(STROKETYPE.CONTOUR);
+            expect(strokes[0].stroke).toEqual(expectedPerimeter);
+            expect(strokes[0].type).toEqual(STROKETYPE.PERIMETER);
         });
     });
 });

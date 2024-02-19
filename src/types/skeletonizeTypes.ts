@@ -22,7 +22,7 @@ export interface Strokes {
 }
 
 export enum STROKETYPE {
-    CONTOUR = 'CONTOUR',
+    PERIMETER = 'PERIMETER',
     SINGLESTROKE = 'SINGLESTROKE',
 }
 
