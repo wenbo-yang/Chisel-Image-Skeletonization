@@ -61,24 +61,6 @@ export class ContourTracer {
         return islandContours;
     }
 
-    private mapIslandRecursion(mat: number[][], visited: number[][], islandContour: Point[], r: number, c: number) {
-        if (this.hasVisited(visited, r, c) || mat[r][c] === 0) {
-            return;
-        }
-
-        visited[r][c] = 1;
-        const neighbors = this.getValidNeighbors(mat, visited, r, c);
-
-        // now mat[r][c] === 1 test 8 neighbors to see if at least 1 is 0
-        if (this.cellIsOnContour(mat, r, c)) {
-            islandContour.push({ r, c });
-        }
-
-        for (let i = 0; i < neighbors.length; i++) {
-            this.mapIslandRecursion(mat, visited, islandContour, neighbors[i].r, neighbors[i].c);
-        }
-    }
-
     private mapIslandLoop(mat: number[][], visited: number[][], islandContour: Point[], r: number, c: number) {
         const stack: Point[] = [];
         stack.push({ r, c });
@@ -93,7 +75,7 @@ export class ContourTracer {
             const neighbors = this.getValidNeighbors(mat, visited, currentPoint.r, currentPoint.c);
 
             // now mat[r][c] === 1 test 8 neighbors to see if at least 1 is 0
-            if (this.cellIsOnContour(mat, currentPoint.r, currentPoint.c)) {
+            if (this.isCellOnContour(mat, currentPoint.r, currentPoint.c)) {
                 islandContour.push(currentPoint);
             }
 
@@ -103,16 +85,8 @@ export class ContourTracer {
 
     private getValidNeighbors(mat: number[][], visited: number[][], r: number, c: number): Point[] {
         // hasVisited is double tested in loop or recursion code, since we have white edges, isInBound always returns true
-        const neighbors = Array<Point>(4);
-        neighbors.push(
-            ...[
-                { r: r - 1, c },
-                { r: r + 1, c },
-                { r, c: c - 1 },
-                { r, c: c + 1 },
-            ],
-        );
-        return neighbors;
+        // prettier-ignore
+        return [{ r: r - 1, c }, { r: r + 1, c }, { r, c: c - 1 }, { r, c: c + 1 }].slice();
 
         // const neighbors: Point[] = [];
 
@@ -132,7 +106,7 @@ export class ContourTracer {
         // return neighbors;
     }
 
-    private cellIsOnContour(mat: number[][], r: number, c: number) {
+    private isCellOnContour(mat: number[][], r: number, c: number): boolean {
         // given we have white borders, isInBound will always return true;
         return mat[r - 1][c] + mat[r + 1][c] + mat[r][c - 1] + mat[r][c + 1] + mat[r - 1][c - 1] + mat[r - 1][c + 1] + mat[r + 1][c - 1] + mat[r + 1][c + 1] < 8;
 
@@ -175,10 +149,27 @@ export class ContourTracer {
         return visited[r][c] === 1;
     }
 
-    private isInBound(mat: number[][], r: number, c: number) {
-        const row = mat.length;
-        const col = mat[0].length;
+    // private mapIslandRecursion(mat: number[][], visited: number[][], islandContour: Point[], r: number, c: number) {
+    //     if (this.hasVisited(visited, r, c) || mat[r][c] === 0) {
+    //         return;
+    //     }
 
-        return r < row && c < col && r >= 0 && c >= 0;
-    }
+    //     visited[r][c] = 1;
+    //     const neighbors = this.getValidNeighbors(mat, visited, r, c);
+
+    //     if (this.isCellOnContour(mat, r, c)) {
+    //         islandContour.push({ r, c });
+    //     }
+
+    //     for (let i = 0; i < neighbors.length; i++) {
+    //         this.mapIslandRecursion(mat, visited, islandContour, neighbors[i].r, neighbors[i].c);
+    //     }
+    // }
+
+    // private isInBound(mat: number[][], r: number, c: number) {
+    //     const row = mat.length;
+    //     const col = mat[0].length;
+
+    //     return r < row && c < col && r >= 0 && c >= 0;
+    // }
 }

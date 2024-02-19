@@ -2,19 +2,15 @@ import { Point } from '../../types/skeletonizeTypes';
 
 export function zsThinning(mat: number[][]): number[][] {
     let pointsToRemove: Point[] = [];
-    let shouldRunStep1 = true;
+
     do {
         pointsToRemove = [];
-        if (shouldRunStep1) {
-            pointsToRemove = zsThinnigGetTargetPointsStep1(mat);
-            removePoints(mat, pointsToRemove);
-        } else {
-            pointsToRemove = zsThinnigGetTargetPointsStep2(mat);
-            removePoints(mat, pointsToRemove);
-        }
+        pointsToRemove = zsThinnigGetTargetPointsStep1(mat);
+        removePoints(mat, pointsToRemove);
 
-        shouldRunStep1 = !shouldRunStep1;
-    } while (!shouldRunStep1 || pointsToRemove.length !== 0);
+        pointsToRemove = zsThinnigGetTargetPointsStep2(mat);
+        removePoints(mat, pointsToRemove);
+    } while (pointsToRemove.length !== 0);
 
     return mat;
 }
@@ -35,6 +31,24 @@ export function zsThinnigGetTargetPointsStep1(mat: number[][]): Point[] {
     return result;
 }
 
+export function zsThinnigGetTargetPointsStep1WithRemovalMat(mat: number[][], removalMat: number[][]): boolean {
+    let hasPointsToRemove = false;
+    const row = mat.length;
+    const col = mat[0].length;
+
+    const result: Point[] = [];
+    for (let i = 0; i < row; i++) {
+        for (let j = 0; j < col; j++) {
+            if (isNotOnTheEdge(mat, i, j) && isThisATargetToRemoveStep1(mat, i, j, getNeighborValues(mat, i, j))) {
+                removalMat[i][j] = 0;
+                hasPointsToRemove = true;
+            }
+        }
+    }
+
+    return hasPointsToRemove;
+}
+
 export function zsThinnigGetTargetPointsStep2(mat: number[][]): Point[] {
     const row = mat.length;
     const col = mat[0].length;
@@ -49,6 +63,23 @@ export function zsThinnigGetTargetPointsStep2(mat: number[][]): Point[] {
     }
 
     return result;
+}
+
+export function zsThinnigGetTargetPointsStep2WithRemovalMat(mat: number[][], removalMat: number[][]): boolean {
+    let hasPointsToRemove = false;
+    const row = mat.length;
+    const col = mat[0].length;
+
+    for (let i = 0; i < row; i++) {
+        for (let j = 0; j < col; j++) {
+            if (isNotOnTheEdge(mat, i, j) && isThisATargetToRemoveStep2(mat, i, j, getNeighborValues(mat, i, j))) {
+                removalMat[i][j] = 0;
+                hasPointsToRemove = true;
+            }
+        }
+    }
+
+    return hasPointsToRemove;
 }
 
 export function isThisATargetToRemoveStep2(mat: number[][], r: number, c: number, neighbors: number[]) {

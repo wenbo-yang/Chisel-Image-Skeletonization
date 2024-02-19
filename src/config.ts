@@ -5,4 +5,6 @@ export class Config {
     public grayScaleWhiteThreshold = 250;
 
     public shortName = 'c-skeletonize';
+
+    public useGpuSkeletonizer = false;
 }

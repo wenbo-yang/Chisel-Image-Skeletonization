@@ -1,12 +1,14 @@
 import { Config } from '../../config';
 import { Point, SkeletonizeProcessor } from '../../types/skeletonizeTypes';
 import { GPU } from 'gpu.js';
-import { zsThinnigGetTargetPointsStep1, zsThinnigGetTargetPointsStep2, zsThinning } from './zsThinning';
+import { zsThinnigGetTargetPointsStep1WithRemovalMat, zsThinnigGetTargetPointsStep2WithRemovalMat } from './zsThinning';
 import { generate2DMatrix } from './matUtilities';
 
 // NOTE: THIS IS NOT FASTER THAN CPU FOR OUR APPLICATION
 // WILL NOT USE THIS for V1
-// Manipulating matrix element breaks GPU rule... this is algorithm is not going to work.
+// Manipulating matrix element breaks GPU rule.
+// We are generating a removal mat and & operate that with target mat
+// We are looking at 100x100 mat operation this is not going to be faster than cpu.
 
 export class GpuSkeletonizeProcessor implements SkeletonizeProcessor {
     private config: Config;
@@ -29,21 +31,14 @@ export class GpuSkeletonizeProcessor implements SkeletonizeProcessor {
             .setPrecision('single')
             .setOutput([mat[0].length, mat.length]);
 
-        let pointsToRemove: Point[] = [];
-        let shouldRunStep1 = true;
+        let hasPointsToRemove = false;
         do {
-            pointsToRemove = [];
-            if (shouldRunStep1) {
-                pointsToRemove = zsThinnigGetTargetPointsStep1(mat);
-                this.applyPointsToRemoveToRemovalMat(pointsToRemove, removalMat);
-                mat = gpuRemovalMat(mat, removalMat) as number[][];
-            } else {
-                pointsToRemove = zsThinnigGetTargetPointsStep2(mat);
-                this.applyPointsToRemoveToRemovalMat(pointsToRemove, removalMat);
-                mat = gpuRemovalMat(mat, removalMat) as number[][];
-            }
-            shouldRunStep1 = !shouldRunStep1;
-        } while (!shouldRunStep1 || pointsToRemove.length !== 0);
+            hasPointsToRemove = zsThinnigGetTargetPointsStep1WithRemovalMat(mat, removalMat);
+            mat = gpuRemovalMat(mat, removalMat) as number[][];
+
+            hasPointsToRemove = zsThinnigGetTargetPointsStep2WithRemovalMat(mat, removalMat);
+            mat = gpuRemovalMat(mat, removalMat) as number[][];
+        } while (hasPointsToRemove);
 
         // const endTime = Date.now();
         // console.log('Done: took ' + (endTime - startTime) + 'ms');
@@ -51,12 +46,6 @@ export class GpuSkeletonizeProcessor implements SkeletonizeProcessor {
         const retMat = this.convertToNumberMat(mat);
 
         return retMat;
-    }
-
-    private applyPointsToRemoveToRemovalMat(pointsToRemove: Point[], removalMat: number[][]) {
-        for (let i = 0; i < pointsToRemove.length; i++) {
-            removalMat[pointsToRemove[i].r][pointsToRemove[i].c] = 0;
-        }
     }
 
     private convertToNumberMat(mat: number[][]) {
