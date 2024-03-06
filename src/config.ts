@@ -7,4 +7,7 @@ export class Config {
     public shortName = 'c-skeletonize';
 
     public useGpuSkeletonizer = false;
+
+    public env = process.env.NODE_ENV || 'development';
+
 }

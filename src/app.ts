@@ -4,9 +4,9 @@ import https from 'https';
 import fs from 'fs';
 import { ControllerFactory } from './controller/controllerFactory';
 import { Config } from './config';
+import {GlobalServiceConfigs} from '../../Chisel-Global-Service-Configs/src/globalSeviceConfigs';
 
-const httpsPort = 3000;
-const httpPort = 5000;
+const servicePorts = new GlobalServiceConfigs().getServicePorts("skeletonizer", process.env.NODE_ENV || "development")
 
 const privateKey = fs.readFileSync('./certs/key.pem');
 const certificate = fs.readFileSync('./certs/cert.crt');
@@ -39,10 +39,10 @@ app.post('/skeletonize', async (req, res) => {
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
 
-httpsServer.listen(httpsPort, () => {
-    console.log(`https server is listening at port ${httpsPort}`);
+httpsServer.listen(servicePorts.https, () => {
+    console.log(`https server is listening at port ${servicePorts.https}`);
 });
 
-httpServer.listen(httpPort, () => {
-    console.log(`http server is listening at port ${httpPort}`);
+httpServer.listen(servicePorts.http, () => {
+    console.log(`http server is listening at port ${servicePorts.http}`);
 });

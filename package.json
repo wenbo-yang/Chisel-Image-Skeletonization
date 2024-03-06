@@ -11,7 +11,7 @@
         "prettier-json": "prettier --config prettier.json --write \"**/*.json\"",
         "prettier": "run-s prettier-ts prettier-json",
         "stop": "pkill -f c-skeletonize",
-        "integration-test-only": "npx jest --runInBand --./test/integration",
+        "integration-test-only": "npx jest --runInBand --testPathPattern=./test/integration",
         "integration-test": "concurrently \"run-s start\" \"run-s integration-test-only && run-s stop\""
     },
     "keywords": [],
