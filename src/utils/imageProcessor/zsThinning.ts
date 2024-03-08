@@ -25,13 +25,13 @@ export function zsThinnigGetTargetPointsStep1WithRemovalMat(mat: number[][], bla
     const pointsToTest = blackPoints.getValues();
     for (let k = 0; k < pointsToTest.length; k++) {
         const i = pointsToTest[k].r;
-        const j = pointsToTest[k].c
+        const j = pointsToTest[k].c;
         if (isNotOnTheEdge(mat, i, j) && isThisATargetToRemoveStep1(mat, i, j, getNeighborValues(mat, i, j))) {
             removalMat[i][j] = 0;
             hasPointsToRemove = true;
         }
     }
-    
+
     return hasPointsToRemove;
 }
 
@@ -43,7 +43,7 @@ export function zsThinnigGetTargetPointsStep2WithRemovalMat(mat: number[][], bla
     const pointsToTest = blackPoints.getValues();
     for (let k = 0; k < pointsToTest.length; k++) {
         const i = pointsToTest[k].r;
-        const j = pointsToTest[k].c
+        const j = pointsToTest[k].c;
         if (isNotOnTheEdge(mat, i, j) && isThisATargetToRemoveStep2(mat, i, j, getNeighborValues(mat, i, j))) {
             removalMat[i][j] = 0;
             hasPointsToRemove = true;
@@ -62,11 +62,11 @@ export function getBlackPointFromMat(mat: number[][]): PointSet {
     for (let i = 0; i < row; i++) {
         for (let j = 0; j < col; j++) {
             if (mat[i][j] === 1) {
-                blackPoints.add({r: i, c: j})
-            }       
+                blackPoints.add({ r: i, c: j });
+            }
         }
     }
-    
+
     return blackPoints;
 }
 
@@ -78,7 +78,7 @@ function zsThinnigGetTargetPointsStep1(mat: number[][], blackPoints: PointSet): 
     const pointsToTest = blackPoints.getValues();
     for (let k = 0; k < pointsToTest.length; k++) {
         const i = pointsToTest[k].r;
-        const j = pointsToTest[k].c
+        const j = pointsToTest[k].c;
 
         if (isNotOnTheEdge(mat, i, j) && isThisATargetToRemoveStep1(mat, i, j, getNeighborValues(mat, i, j))) {
             result.push({ r: i, c: j });
@@ -96,7 +96,7 @@ function zsThinnigGetTargetPointsStep2(mat: number[][], blackPoints: PointSet): 
     const pointsToTest = blackPoints.getValues();
     for (let k = 0; k < pointsToTest.length; k++) {
         const i = pointsToTest[k].r;
-        const j = pointsToTest[k].c
+        const j = pointsToTest[k].c;
         if (isNotOnTheEdge(mat, i, j) && isThisATargetToRemoveStep2(mat, i, j, getNeighborValues(mat, i, j))) {
             result.push({ r: i, c: j });
         }
@@ -104,8 +104,6 @@ function zsThinnigGetTargetPointsStep2(mat: number[][], blackPoints: PointSet): 
 
     return result;
 }
-
-
 
 function isThisATargetToRemoveStep2(mat: number[][], r: number, c: number, neighbors: number[]) {
     if (mat[r][c] === 1) {
@@ -179,4 +177,3 @@ function removePoints(mat: number[][], blackPoints: PointSet, pointsToRemove: Po
         blackPoints.remove(p);
     });
 }
-

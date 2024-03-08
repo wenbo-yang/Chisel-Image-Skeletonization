@@ -1,6 +1,6 @@
 // fast removal and adding of points
 
-import { Point } from "../../types/skeletonizeTypes";
+import { Point } from '../../types/skeletonizeTypes';
 
 export class PointSet {
     private offset: number;
@@ -29,13 +29,12 @@ export class PointSet {
     public getValues(): Point[] {
         const retVal: Point[] = [];
 
-        this.points.forEach(v => {
-            const r = Math.floor(v/this.offset);
+        this.points.forEach((v) => {
+            const r = Math.floor(v / this.offset);
             const c = v - r * this.offset;
-            retVal.push({r: r-1, c});
+            retVal.push({ r: r - 1, c });
         });
 
         return retVal;
     }
 }
-

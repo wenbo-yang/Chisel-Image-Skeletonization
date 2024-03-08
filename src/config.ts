@@ -9,5 +9,4 @@ export class Config {
     public useGpuSkeletonizer = false;
 
     public env = process.env.NODE_ENV || 'development';
-
 }
