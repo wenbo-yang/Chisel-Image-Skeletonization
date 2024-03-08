@@ -1,7 +1,7 @@
 import { Config } from '../../config';
-import { Point, SkeletonizeProcessor } from '../../types/skeletonizeTypes';
+import { SkeletonizeProcessor } from '../../types/skeletonizeTypes';
 import { GPU } from 'gpu.js';
-import { zsThinnigGetTargetPointsStep1WithRemovalMat, zsThinnigGetTargetPointsStep2WithRemovalMat } from './zsThinning';
+import { getBlackPointFromMat, zsThinnigGetTargetPointsStep1WithRemovalMat, zsThinnigGetTargetPointsStep2WithRemovalMat } from './zsThinning';
 import { generate2DMatrix } from './matUtilities';
 
 // NOTE: THIS IS NOT FASTER THAN CPU FOR OUR APPLICATION
@@ -32,11 +32,12 @@ export class GpuSkeletonizeProcessor implements SkeletonizeProcessor {
             .setOutput([mat[0].length, mat.length]);
 
         let hasPointsToRemove = false;
+        const blackPoints = getBlackPointFromMat(mat);
         do {
-            hasPointsToRemove = zsThinnigGetTargetPointsStep1WithRemovalMat(mat, removalMat);
+            hasPointsToRemove = zsThinnigGetTargetPointsStep1WithRemovalMat(mat, blackPoints, removalMat);
             mat = gpuRemovalMat(mat, removalMat) as number[][];
 
-            hasPointsToRemove = zsThinnigGetTargetPointsStep2WithRemovalMat(mat, removalMat);
+            hasPointsToRemove = zsThinnigGetTargetPointsStep2WithRemovalMat(mat, blackPoints, removalMat);
             mat = gpuRemovalMat(mat, removalMat) as number[][];
         } while (hasPointsToRemove);
 

@@ -4,9 +4,9 @@ import https from 'https';
 import fs from 'fs';
 import { ControllerFactory } from './controller/controllerFactory';
 import { Config } from './config';
-import {GlobalServiceConfigs} from '../../Chisel-Global-Service-Configs/src/globalSeviceConfigs';
+import { GlobalServiceConfigs } from '../../Chisel-Global-Service-Configs/src/globalSeviceConfigs';
 
-const servicePorts = new GlobalServiceConfigs().getServicePorts("skeletonizer", process.env.NODE_ENV || "development")
+const servicePorts = new GlobalServiceConfigs().getServicePorts('skeletonizer', process.env.NODE_ENV || 'development');
 
 const privateKey = fs.readFileSync('./certs/key.pem');
 const certificate = fs.readFileSync('./certs/cert.crt');
