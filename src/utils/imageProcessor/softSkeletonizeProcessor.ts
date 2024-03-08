@@ -1,7 +1,5 @@
 import { Config } from '../../config';
-import { BitMapBuffer } from '../bitMapBuffer';
 import { SkeletonizeProcessor } from '../../types/skeletonizeTypes';
-import * as matUtilities from './matUtilities';
 import { zsThinning } from './zsThinning';
 
 export class SoftSkeletonizeProcessor implements SkeletonizeProcessor {

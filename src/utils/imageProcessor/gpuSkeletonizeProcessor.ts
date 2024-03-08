@@ -1,5 +1,5 @@
 import { Config } from '../../config';
-import { Point, SkeletonizeProcessor } from '../../types/skeletonizeTypes';
+import { SkeletonizeProcessor } from '../../types/skeletonizeTypes';
 import { GPU } from 'gpu.js';
 import { getBlackPointFromMat, zsThinnigGetTargetPointsStep1WithRemovalMat, zsThinnigGetTargetPointsStep2WithRemovalMat } from './zsThinning';
 import { generate2DMatrix } from './matUtilities';

@@ -19,8 +19,6 @@ export function zsThinning(mat: number[][]): number[][] {
 
 export function zsThinnigGetTargetPointsStep1WithRemovalMat(mat: number[][], blackPoints: PointSet, removalMat: number[][]): boolean {
     let hasPointsToRemove = false;
-    const row = mat.length;
-    const col = mat[0].length;
 
     const pointsToTest = blackPoints.getValues();
     for (let k = 0; k < pointsToTest.length; k++) {
@@ -37,8 +35,6 @@ export function zsThinnigGetTargetPointsStep1WithRemovalMat(mat: number[][], bla
 
 export function zsThinnigGetTargetPointsStep2WithRemovalMat(mat: number[][], blackPoints: PointSet, removalMat: number[][]): boolean {
     let hasPointsToRemove = false;
-    const row = mat.length;
-    const col = mat[0].length;
 
     const pointsToTest = blackPoints.getValues();
     for (let k = 0; k < pointsToTest.length; k++) {
@@ -55,7 +51,6 @@ export function zsThinnigGetTargetPointsStep2WithRemovalMat(mat: number[][], bla
 
 export function getBlackPointFromMat(mat: number[][]): PointSet {
     const blackPoints = new PointSet();
-
     const row = mat.length;
     const col = mat[0].length;
 
@@ -71,9 +66,6 @@ export function getBlackPointFromMat(mat: number[][]): PointSet {
 }
 
 function zsThinnigGetTargetPointsStep1(mat: number[][], blackPoints: PointSet): Point[] {
-    const row = mat.length;
-    const col = mat[0].length;
-
     const result: Point[] = [];
     const pointsToTest = blackPoints.getValues();
     for (let k = 0; k < pointsToTest.length; k++) {
@@ -89,9 +81,6 @@ function zsThinnigGetTargetPointsStep1(mat: number[][], blackPoints: PointSet): 
 }
 
 function zsThinnigGetTargetPointsStep2(mat: number[][], blackPoints: PointSet): Point[] {
-    const row = mat.length;
-    const col = mat[0].length;
-
     const result: Point[] = [];
     const pointsToTest = blackPoints.getValues();
     for (let k = 0; k < pointsToTest.length; k++) {
