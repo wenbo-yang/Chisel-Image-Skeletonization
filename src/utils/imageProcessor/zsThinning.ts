@@ -1,5 +1,5 @@
 import { Point } from '../../types/skeletonizeTypes';
-import { PointSet } from './PointSet';
+import { PointSet } from './pointSet';
 
 export function zsThinning(mat: number[][]): number[][] {
     let pointsToRemove: Point[] = [];
