@@ -1,4 +1,6 @@
 {
     "serviceName": "skeletonizer",
-    "shortName": "c-skeleton"
+    "shortName": "c-skeleton",
+    "imageHeight": 50,
+    "imageWidth": 40
 }
