@@ -25,7 +25,7 @@ export async function convertDataToZeroOneMat(bitMapBuffer: BitMapBuffer, graySc
         mat.push(row);
     }
 
-    return trimBinaryMat(mat);
+    return mat;
 }
 
 export function logMat(mat: Array<number[]>): void {
