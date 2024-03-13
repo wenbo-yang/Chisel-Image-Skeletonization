@@ -4,16 +4,17 @@ import https from 'https';
 import fs from 'fs';
 import { ControllerFactory } from './controller/controllerFactory';
 import { Config } from './config';
-import { GlobalServiceConfigs } from '../../Chisel-Global-Service-Configs/src/globalSeviceConfigs';
 
-const servicePorts = new GlobalServiceConfigs().getServicePorts('skeletonizer', process.env.NODE_ENV || 'development');
+const config = new Config();
+
+const servicePorts = config.servicePorts;
 
 const privateKey = fs.readFileSync('./certs/key.pem');
 const certificate = fs.readFileSync('./certs/cert.crt');
 
 const credentials = { key: privateKey, cert: certificate };
 
-process.title = new Config().shortName;
+process.title = config.shortName;
 
 const app = express();
 
@@ -26,7 +27,7 @@ app.get('/healthCheck', (req, res) => {
 
 app.post('/skeletonize', async (req, res) => {
     try {
-        const skeletonizeController = ControllerFactory.makeSkeletonizeController();
+        const skeletonizeController = ControllerFactory.makeSkeletonizeController(config);
         const data = await skeletonizeController.skeletonize(req);
 
         res.send(data);
