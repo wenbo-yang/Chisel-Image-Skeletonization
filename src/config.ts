@@ -15,7 +15,7 @@ export class Config {
     private serviceConfig: ServiceConfig;
     private globalServicePortMappings: any;
 
-    constructor(serviceConfig?: ServiceConfig, parsedGlobalServicePortMappings?: any ) {
+    constructor(serviceConfig?: ServiceConfig, parsedGlobalServicePortMappings?: any) {
         this.serviceConfig = serviceConfig || staticServiceConfig;
         this.globalServicePortMappings = parsedGlobalServicePortMappings || globalServicePortMappings;
     }

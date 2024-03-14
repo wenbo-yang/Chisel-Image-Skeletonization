@@ -9,7 +9,7 @@ export class SkeletonizeController {
     private config: Config;
 
     constructor(config?: Config, skeletonizeModel?: SkeletonizeModel) {
-        this.config = config || new Config()
+        this.config = config || new Config();
         this.skeletonizeModel = skeletonizeModel || new SkeletonizeModel(this.config);
     }
 
