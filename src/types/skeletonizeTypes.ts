@@ -1,5 +1,3 @@
-import { BitMapBuffer } from '../utils/bitMapBuffer';
-
 export interface SkeletonizeRequestBody {
     name: string;
     type: string;

@@ -14,7 +14,6 @@ export class SkeletonizeController {
     }
 
     public async skeletonize(req: Request<{}, any, any, ParsedQs, Record<string, any>>): Promise<SkeletonizeResponse> {
-        // stubby
         const body = req.body as SkeletonizeRequestBody;
         const skeletonized = await this.skeletonizeModel.tryskeletonize(Buffer.from(body.data, 'base64'));
 

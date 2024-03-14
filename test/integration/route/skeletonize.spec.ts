@@ -1,4 +1,4 @@
-import { url } from '../utils';
+import { httpsUrl } from '../utils';
 import axios from 'axios';
 import https from 'https';
 import fs from 'fs/promises';
@@ -17,7 +17,7 @@ const axiosClient = axios.create({
 describe('skeletonize request', () => {
     describe('GET /healthCheck', () => {
         it('should respond with 200', async () => {
-            const response = await axiosClient.get(url + '/healthCheck');
+            const response = await axiosClient.get(httpsUrl + '/healthCheck');
 
             expect(response.status).toBe(200);
             expect(response.data).toBe('i am healthy!!!');
@@ -25,7 +25,7 @@ describe('skeletonize request', () => {
     });
 
     describe('POST /skeletonize', () => {
-        const skeletonizeUrl = url + '/skeletonize';
+        const skeletonizeUrl = httpsUrl + '/skeletonize';
         it('should respond with 200, after receiving an image', async () => {
             const sampleImageUrl = './test/integration/data/running_man.png';
             const data = await fs.readFile(sampleImageUrl);

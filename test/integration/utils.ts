@@ -1,1 +1,1 @@
-export const url = 'https://localhost:3000';
+export const httpsUrl = 'https://localhost:3000';

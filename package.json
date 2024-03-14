@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "tests": "echo \"Error: no test specified\" && exit 1",
         "build": "npx tsc",
         "start": "node dist/src/app.js",
         "watch": "npx tsc --watch",
@@ -11,8 +11,8 @@
         "prettier-json": "prettier --config prettier.json --write \"**/*.json\"",
         "prettier": "run-s prettier-ts prettier-json",
         "stop": "pkill -f c-skeleton",
-        "integration-test-only": "npx jest --runInBand --testPathPattern=./test/integration",
-        "integration-test": "concurrently \"run-s start\" \"run-s integration-test-only && run-s stop\""
+        "integration-tests-only": "npx jest --runInBand --testPathPattern=./test/integration",
+        "integration-tests": "concurrently \"run-s start\" \"run-s integration-tests-only && run-s stop\""
     },
     "keywords": [],
     "author": "",
