@@ -1,8 +1,8 @@
 import { gzip } from 'node-gzip';
-import { COMPRESSION, SkeletonizedImage } from '../types/skeletonizeTypes';
+import { COMPRESSION, STROKETYPE, SkeletonizedImage } from '../types/skeletonizeTypes';
 import { ImageConverter } from '../utils/imageConverter/imageConverter';
 import { Skeletonizer } from '../utils/skeletonizer';
-import { convertDataToZeroOneMat } from '../utils/imageProcessor/matUtilities';
+import { convert2DMatToString, convertDataToZeroOneMat } from '../utils/imageProcessor/matUtilities';
 import { Config } from '../config';
 import { PerimeterTracer } from '../utils/perimeterTracer';
 
@@ -32,7 +32,7 @@ export class SkeletonizeModel {
             imageType: bitmapImage.imageType,
             grayScale: compressed,
             skeleton: skeleton,
-            strokes: perimeters,
+            strokes: perimeters.concat([{type: STROKETYPE.ORIGINAL, offset: {r:0, c:0}, stroke: convert2DMatToString(binaryMat)}]),
         };
     }
 

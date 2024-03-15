@@ -91,62 +91,11 @@ export class PerimeterTracer {
         // hasVisited is double tested in loop or recursion code, since we have white edges, isInBound always returns true
         // prettier-ignore
         return [{ r: r - 1, c }, { r: r + 1, c }, { r, c: c - 1 }, { r, c: c + 1 }].slice();
-
-        // const neighbors: Point[] = [];
-
-        // if (this.isInBound(mat, r - 1, c) && !this.hasVisited(visited, r - 1, c)) {
-        //     neighbors.push({ r: r - 1, c }); // up
-        // }
-        // if (this.isInBound(mat, r + 1, c) && !this.hasVisited(visited, r + 1, c)) {
-        //     neighbors.push({ r: r + 1, c }); // down
-        // }
-        // if (this.isInBound(mat, r, c - 1) && !this.hasVisited(visited, r, c - 1)) {
-        //     neighbors.push({ r, c: c - 1 }); // left
-        // }
-        // if (this.isInBound(mat, r, c + 1) && !this.hasVisited(visited, r, c + 1)) {
-        //     neighbors.push({ r, c: c + 1 }); // right
-        // }
-
-        // return neighbors;
     }
 
     private isCellOnPerimeter(mat: number[][], r: number, c: number): boolean {
         // given we have white borders, isInBound will always return true;
         return mat[r - 1][c] + mat[r + 1][c] + mat[r][c - 1] + mat[r][c + 1] + mat[r - 1][c - 1] + mat[r - 1][c + 1] + mat[r + 1][c - 1] + mat[r + 1][c + 1] < 8;
-
-        // if (this.isInBound(mat, r - 1, c) && mat[r - 1][c] === 0) {
-        //     return true; // up
-        // }
-
-        // if (this.isInBound(mat, r + 1, c) && mat[r + 1][c] === 0) {
-        //     return true; // down
-        // }
-
-        // if (this.isInBound(mat, r, c - 1) && mat[r][c - 1] === 0) {
-        //     return true; // left
-        // }
-
-        // if (this.isInBound(mat, r, c + 1) && mat[r][c + 1] === 0) {
-        //     return true; // right
-        // }
-
-        // if (this.isInBound(mat, r - 1, c - 1) && mat[r - 1][c - 1] === 0) {
-        //     return true; // top left
-        // }
-
-        // if (this.isInBound(mat, r - 1, c + 1) && mat[r - 1][c + 1] === 0) {
-        //     return true; // top right
-        // }
-
-        // if (this.isInBound(mat, r + 1, c - 1) && mat[r + 1][c - 1] === 0) {
-        //     return true; // bottom left
-        // }
-
-        // if (this.isInBound(mat, r + 1, c + 1) && mat[r + 1][c + 1] === 0) {
-        //     return true; // bottom right
-        // }
-
-        // return false;
     }
 
     // private mapIslandRecursion(mat: number[][], visited: number[][], islandPerimeter: Point[], r: number, c: number) {
