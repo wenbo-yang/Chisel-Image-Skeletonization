@@ -367,5 +367,30 @@ describe('skeletonize request', () => {
             expect(strokes[1].stroke).toEqual(expectedPerimeter);
             expect(strokes[1].type).toEqual(STROKETYPE.ORIGINAL);
         });
+
+        it('should return image with requested height and width', async () => {
+            // prettier-ignore
+            const sampleImageUrl = './test/integration/data/running_man.png';
+            const data = await fs.readFile(sampleImageUrl);
+            const arrayBuffer = Buffer.from(data).toString('base64');
+
+            const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
+                name: 'someImage',
+                type: 'png',
+                compression: 'gzip',
+                data: arrayBuffer,
+                returnImageHeight: 100,
+                returnImageWidth: 80
+            });
+
+            const strokes = response.data.strokes;
+            const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
+            await fs.writeFile('./test/integration/data/running_man_bitmap_upscaled_image_test.bmp', unzipped, { flag: 'w+' });
+
+            expect(response.data.skeleton).toBeDefined();
+            expect(strokes.length).toEqual(2);
+            expect(response.data.skeleton.split('\n').length).toEqual(100);
+            // expect(response.data.skeleton.split('\n')[0].length).toEqual(80);
+        });
     });
 });

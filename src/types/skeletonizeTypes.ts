@@ -3,6 +3,8 @@ export interface SkeletonizeRequestBody {
     type: string;
     compression: string;
     data: string;
+    returnImageHeight?: number;
+    returnImageWidth?: number;
 }
 
 export interface SkeletonizedImage {
