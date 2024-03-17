@@ -1,7 +1,7 @@
 import Jimp from 'jimp';
 import { BitMapBuffer } from '../bitMapBuffer';
 import { Config } from '../../config';
-import { decode, encode } from 'bmp-js';
+import { decode } from 'bmp-js';
 
 export class ImageConverter {
     private config: Config;
@@ -11,8 +11,8 @@ export class ImageConverter {
     }
 
     public async convertAndResizeToBMP(buffer: Buffer): Promise<BitMapBuffer> {
-        const jimp = await Jimp.read(Buffer.from(buffer));
-        const bmpImage = decode(await jimp.grayscale().getBufferAsync(Jimp.MIME_BMP));
+        const sourceImage = (await Jimp.read(Buffer.from(buffer))).grayscale();
+        const bmpImage = sourceImage.bitmap;
 
         // get the box
         let top = Number.MAX_VALUE;
@@ -34,10 +34,11 @@ export class ImageConverter {
             }
         }
 
-        jimp.crop(left, top, right - left, bottom - top).resize(this.config.imageWidth, this.config.imageHeight);
+        sourceImage.crop(left, top, right - left, bottom - top).resize(this.config.imageWidth - 2, this.config.imageHeight - 2);
+        const imageWithWhiteBorder = new Jimp(this.config.imageWidth, this.config.imageHeight, 'white').blit(sourceImage, 1, 1);
         
-        const data = await jimp.grayscale().getBufferAsync(Jimp.MIME_BMP);
-        
+        const data = await imageWithWhiteBorder.getBufferAsync(Jimp.MIME_BMP);
+
         return new BitMapBuffer(data, this.config.imageHeight, this.config.imageWidth);
     }
 }
