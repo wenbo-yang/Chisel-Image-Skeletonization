@@ -32,6 +32,7 @@ export class ImageConverter {
                 index += 4;
             }
         }
+
         const imageHeight = convertedImageHeight || this.config.imageHeight;
         const imageWidth = convertedImageWidth || this.config.imageWidth;
 
