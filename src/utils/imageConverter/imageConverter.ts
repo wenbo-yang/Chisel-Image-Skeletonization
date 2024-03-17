@@ -1,7 +1,6 @@
 import Jimp from 'jimp';
 import { BitMapBuffer } from '../bitMapBuffer';
 import { Config } from '../../config';
-import { decode } from 'bmp-js';
 
 export class ImageConverter {
     private config: Config;
