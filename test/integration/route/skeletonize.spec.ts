@@ -124,6 +124,8 @@ describe('skeletonize request', () => {
                 type: 'png',
                 compression: 'gzip',
                 data: arrayBuffer,
+                returnImageHeight: 50,
+                returnImageWidth: 40,
             });
 
             const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
@@ -215,6 +217,8 @@ describe('skeletonize request', () => {
                 type: 'png',
                 compression: 'gzip',
                 data: arrayBuffer,
+                returnImageHeight: 50,
+                returnImageWidth: 40,
             });
 
             const skeleton = response.data.skeleton;
@@ -285,6 +289,8 @@ describe('skeletonize request', () => {
                 type: 'png',
                 compression: 'gzip',
                 data: arrayBuffer,
+                returnImageHeight: 50,
+                returnImageWidth: 40,
             });
 
             const strokes = response.data.strokes;
@@ -358,6 +364,8 @@ describe('skeletonize request', () => {
                 type: 'png',
                 compression: 'gzip',
                 data: arrayBuffer,
+                returnImageHeight: 50,
+                returnImageWidth: 40,
             });
 
             const strokes = response.data.strokes;
@@ -379,8 +387,8 @@ describe('skeletonize request', () => {
                 type: 'png',
                 compression: 'gzip',
                 data: arrayBuffer,
-                returnImageHeight: 100,
-                returnImageWidth: 80
+                returnImageHeight: 150,
+                returnImageWidth: 120,
             });
 
             const strokes = response.data.strokes;
@@ -389,8 +397,8 @@ describe('skeletonize request', () => {
 
             expect(response.data.skeleton).toBeDefined();
             expect(strokes.length).toEqual(2);
-            expect(response.data.skeleton.split('\n').length).toEqual(100);
-            // expect(response.data.skeleton.split('\n')[0].length).toEqual(80);
+            expect(response.data.skeleton.split('\n').length).toEqual(150);
+            expect(response.data.skeleton.split('\n')[0].length).toEqual(120);
         });
     });
 });

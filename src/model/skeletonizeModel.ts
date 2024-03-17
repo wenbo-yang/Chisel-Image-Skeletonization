@@ -31,7 +31,7 @@ export class SkeletonizeModel {
             imageType: bitmapImage.imageType,
             grayScale: compressed,
             skeleton: skeleton,
-            strokes: perimeters.concat([{type: STROKETYPE.ORIGINAL, offset: {r:0, c:0}, stroke: convert2DMatToString(binaryMat)}]),
+            strokes: perimeters.concat([{ type: STROKETYPE.ORIGINAL, offset: { r: 0, c: 0 }, stroke: convert2DMatToString(binaryMat) }]),
         };
     }
 
