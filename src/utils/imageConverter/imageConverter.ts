@@ -35,8 +35,9 @@ export class ImageConverter {
         }
 
         jimp.crop(left, top, right - left, bottom - top).resize(this.config.imageWidth, this.config.imageHeight);
-
+        
         const data = await jimp.grayscale().getBufferAsync(Jimp.MIME_BMP);
+        
         return new BitMapBuffer(data, this.config.imageHeight, this.config.imageWidth);
     }
 }
