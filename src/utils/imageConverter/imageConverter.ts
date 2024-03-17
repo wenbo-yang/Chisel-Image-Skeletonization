@@ -10,7 +10,7 @@ export class ImageConverter {
         this.config = config || new Config();
     }
 
-    public async convertAndResizeToBMP(buffer: Buffer): Promise<BitMapBuffer> {
+    public async convertAndResizeToBMP(buffer: Buffer, convertedImageHeight?: number, convertedImageWidth?: number): Promise<BitMapBuffer> {
         const sourceImage = (await Jimp.read(Buffer.from(buffer))).grayscale();
         const bmpImage = sourceImage.bitmap;
 
@@ -33,12 +33,13 @@ export class ImageConverter {
                 index += 4;
             }
         }
+        const imageHeight = convertedImageHeight || this.config.imageHeight; 
+        const imageWidth = convertedImageWidth || this.config.imageWidth;
 
-        sourceImage.crop(left, top, right - left, bottom - top).resize(this.config.imageWidth - 2, this.config.imageHeight - 2);
-        const imageWithWhiteBorder = new Jimp(this.config.imageWidth, this.config.imageHeight, 'white').blit(sourceImage, 1, 1);
+        sourceImage.crop(left, top, right - left, bottom - top).resize(imageWidth - 2, imageHeight - 2);
+        const imageWithWhiteBorder = new Jimp(imageWidth, imageHeight, 'white').blit(sourceImage, 1, 1);
         
         const data = await imageWithWhiteBorder.getBufferAsync(Jimp.MIME_BMP);
-
         return new BitMapBuffer(data, this.config.imageHeight, this.config.imageWidth);
     }
 }
