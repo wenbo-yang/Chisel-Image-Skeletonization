@@ -25,7 +25,7 @@ export class Config {
     }
 
     public get imageWidth() {
-        return 60;
+        return 80;
     }
 
     public get grayScaleWhiteThreshold() {
