@@ -21,11 +21,11 @@ export class Config {
     }
 
     public get imageHeight() {
-        return 80;
+        return 50;
     }
 
     public get imageWidth() {
-        return 60;
+        return 40;
     }
 
     public get grayScaleWhiteThreshold() {

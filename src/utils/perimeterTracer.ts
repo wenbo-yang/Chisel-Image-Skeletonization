@@ -1,5 +1,5 @@
 import { Config } from '../config';
-import { Point, STROKETYPE, Strokes } from '../types/skeletonizeTypes';
+import { Point, TRANSFORMEDTYPE, Transformed } from '../types/skeletonizeTypes';
 import { convert2DMatToString, generate2DMatrix, getOffsetsFromPointList } from './imageProcessor/matUtilities';
 
 export class PerimeterTracer {
@@ -9,22 +9,22 @@ export class PerimeterTracer {
         this.config = config || new Config();
     }
 
-    public async trace(binaryMat: Array<number[]>): Promise<Strokes[]> {
+    public async trace(binaryMat: Array<number[]>): Promise<Transformed[]> {
         const islandPerimeters = this.findIslands(binaryMat);
         const perimeterStrokes = this.applyIslandPerimetersToMat(islandPerimeters);
 
         return perimeterStrokes;
     }
 
-    private async applyIslandPerimetersToMat(islandPerimeters: Point[][]): Promise<Strokes[]> {
-        let strokes: Strokes[] = [];
+    private async applyIslandPerimetersToMat(islandPerimeters: Point[][]): Promise<Transformed[]> {
+        let strokes: Transformed[] = [];
 
         for (let i = 0; i < islandPerimeters.length; i++) {
             const offsets = getOffsetsFromPointList(islandPerimeters[i]);
             const islandPerimeterMat = this.mapIslandPerimeter(offsets, islandPerimeters[i]);
             const islandPerimeterString = convert2DMatToString(islandPerimeterMat);
 
-            strokes.push({ type: STROKETYPE.PERIMETER, offset: { r: offsets[0].r - 1, c: offsets[0].c - 1 }, stroke: islandPerimeterString });
+            strokes.push({ type: TRANSFORMEDTYPE.PERIMETER, offset: { r: offsets[0].r - 1, c: offsets[0].c - 1 }, stroke: islandPerimeterString });
         }
 
         return strokes;
@@ -97,28 +97,4 @@ export class PerimeterTracer {
         // given we have white borders, isInBound will always return true;
         return mat[r - 1][c] + mat[r + 1][c] + mat[r][c - 1] + mat[r][c + 1] + mat[r - 1][c - 1] + mat[r - 1][c + 1] + mat[r + 1][c - 1] + mat[r + 1][c + 1] < 8;
     }
-
-    // private mapIslandRecursion(mat: number[][], visited: number[][], islandPerimeter: Point[], r: number, c: number) {
-    //     if (this.hasVisited(visited, r, c) || mat[r][c] === 0) {
-    //         return;
-    //     }
-
-    //     visited[r][c] = 1;
-    //     const neighbors = this.getValidNeighbors(mat, visited, r, c);
-
-    //     if (this.isCellOnPerimeter(mat, r, c)) {
-    //         islandPerimeter.push({ r, c });
-    //     }
-
-    //     for (let i = 0; i < neighbors.length; i++) {
-    //         this.mapIslandRecursion(mat, visited, islandPerimeter, neighbors[i].r, neighbors[i].c);
-    //     }
-    // }
-
-    // private isInBound(mat: number[][], r: number, c: number) {
-    //     const row = mat.length;
-    //     const col = mat[0].length;
-
-    //     return r < row && c < col && r >= 0 && c >= 0;
-    // }
 }
