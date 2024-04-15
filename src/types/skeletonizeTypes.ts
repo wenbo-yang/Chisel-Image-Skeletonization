@@ -11,20 +11,20 @@ export interface SkeletonizedImage {
     imageType: string;
     compression: string;
     grayScale: string;
-    skeleton: string;
-    strokes: Strokes[];
+    transformedData: Transformed[];
 }
 
-export interface Strokes {
-    type: STROKETYPE;
+export interface Transformed {
+    type: TRANSFORMEDTYPE;
     offset: Point;
     stroke: string;
 }
 
-export enum STROKETYPE {
+export enum TRANSFORMEDTYPE {
     ORIGINAL = 'ORIGINAL',
     PERIMETER = 'PERIMETER',
     SINGLESTROKE = 'SINGLESTROKE',
+    SKELETON = 'SKELETON',
 }
 
 export type SkeletonizeResponse = SkeletonizedImage;

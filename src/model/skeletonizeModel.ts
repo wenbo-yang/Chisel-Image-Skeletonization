@@ -1,8 +1,8 @@
 import { gzip } from 'node-gzip';
-import { COMPRESSION, STROKETYPE, SkeletonizedImage } from '../types/skeletonizeTypes';
+import { COMPRESSION, SkeletonizedImage, TRANSFORMEDTYPE } from '../types/skeletonizeTypes';
 import { ImageConverter } from '../utils/imageConverter/imageConverter';
 import { Skeletonizer } from '../utils/skeletonizer';
-import { convert2DMatToString, convertDataToZeroOneMat, logMat } from '../utils/imageProcessor/matUtilities';
+import { convert2DMatToString, convertDataToZeroOneMat } from '../utils/imageProcessor/matUtilities';
 import { Config } from '../config';
 import { PerimeterTracer } from '../utils/perimeterTracer';
 
@@ -23,15 +23,20 @@ export class SkeletonizeModel {
         const binaryMat = await convertDataToZeroOneMat(bitmapImage, this.config.grayScaleWhiteThreshold);
         const perimeters = await this.perimeterTracer.trace(binaryMat);
         const skeleton = await this.skeletonizer.skeletonizeImage(binaryMat);
-
         const compressed = Buffer.from(await this.compress(bitmapImage.imageBuffer)).toString('base64');
 
         return {
             compression: COMPRESSION.GZIP,
             imageType: bitmapImage.imageType,
             grayScale: compressed,
-            skeleton: skeleton,
-            strokes: perimeters.concat([{ type: STROKETYPE.ORIGINAL, offset: { r: 0, c: 0 }, stroke: convert2DMatToString(binaryMat) }]),
+            transformedData: perimeters.concat([
+                { type: TRANSFORMEDTYPE.ORIGINAL, offset: { r: 0, c: 0 }, stroke: convert2DMatToString(binaryMat) },
+                {
+                    type: TRANSFORMEDTYPE.SKELETON,
+                    offset: { r: 0, c: 0 },
+                    stroke: skeleton,
+                },
+            ]),
         };
     }
 
