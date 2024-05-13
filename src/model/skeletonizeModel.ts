@@ -1,8 +1,8 @@
-import { gzip } from 'node-gzip';
-import { COMPRESSION, SkeletonizedImage, TRANSFORMEDTYPE } from '../types/skeletonizeTypes';
+import { gzip, ungzip } from 'node-gzip';
+import { COMPRESSION, SKELETONIZEREQUESTIMAGETYPE, SkeletonizedImage, TRANSFORMEDTYPE } from '../types/skeletonizeTypes';
 import { ImageConverter } from '../utils/imageConverter/imageConverter';
 import { Skeletonizer } from '../utils/skeletonizer';
-import { convert2DMatToString, convertDataToZeroOneMat } from '../utils/imageProcessor/matUtilities';
+import { convert2DMatToString, convertDataToZeroOneMat, logMat } from '../utils/imageProcessor/matUtilities';
 import { Config } from '../config';
 import { PerimeterTracer } from '../utils/perimeterTracer';
 
@@ -18,17 +18,16 @@ export class SkeletonizeModel {
         this.perimeterTracer = perimeterTracer || new PerimeterTracer(this.config);
     }
 
-    public async tryskeletonize(data: Buffer, returnImageHeight?: number, returnImageWidth?: number): Promise<SkeletonizedImage> {
-        const bitmapImage = await this.imageConverter.convertAndResizeToBMP(data, returnImageHeight, returnImageWidth);
+    public async tryskeletonize(type: SKELETONIZEREQUESTIMAGETYPE, compression: COMPRESSION, returnCompression: COMPRESSION, data: Buffer, returnImageHeight?: number, returnImageWidth?: number): Promise<SkeletonizedImage> {
+        const bitmapImage = await this.imageConverter.convertAndResizeToBMP(type, compression === COMPRESSION.GZIP ? await this.uncompress(data) : data, returnImageHeight, returnImageWidth);
         const binaryMat = await convertDataToZeroOneMat(bitmapImage, this.config.grayScaleWhiteThreshold);
         const perimeters = await this.perimeterTracer.trace(binaryMat);
         const skeleton = await this.skeletonizer.skeletonizeImage(binaryMat);
-        const compressed = Buffer.from(await this.compress(bitmapImage.imageBuffer)).toString('base64');
-
+        const grayScaleImageData = Buffer.from(returnCompression === COMPRESSION.GZIP ? await this.compress(bitmapImage.imageBuffer) : bitmapImage.imageBuffer).toString('base64');
         return {
-            compression: COMPRESSION.GZIP,
+            compression: returnCompression,
             imageType: bitmapImage.imageType,
-            grayScale: compressed,
+            grayScale: grayScaleImageData,
             transformedData: perimeters.concat([
                 { type: TRANSFORMEDTYPE.ORIGINAL, offset: { r: 0, c: 0 }, stroke: convert2DMatToString(binaryMat) },
                 {
@@ -42,5 +41,9 @@ export class SkeletonizeModel {
 
     private async compress(data: Buffer): Promise<Buffer> {
         return await gzip(data);
+    }
+
+    private async uncompress(data: Buffer): Promise<Buffer> {
+        return await ungzip(data);
     }
 }

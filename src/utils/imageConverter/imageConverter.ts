@@ -1,6 +1,7 @@
 import Jimp from 'jimp';
 import { BitMapBuffer } from '../bitMapBuffer';
 import { Config } from '../../config';
+import { SKELETONIZEREQUESTIMAGETYPE } from '../../types/skeletonizeTypes';
 
 export class ImageConverter {
     private config: Config;
@@ -9,8 +10,8 @@ export class ImageConverter {
         this.config = config || new Config();
     }
 
-    public async convertAndResizeToBMP(buffer: Buffer, convertedImageHeight?: number, convertedImageWidth?: number): Promise<BitMapBuffer> {
-        const sourceImage = (await Jimp.read(Buffer.from(buffer))).grayscale();
+    public async convertAndResizeToBMP(type: SKELETONIZEREQUESTIMAGETYPE, buffer: Buffer, convertedImageHeight?: number, convertedImageWidth?: number): Promise<BitMapBuffer> {
+        const sourceImage = (type === SKELETONIZEREQUESTIMAGETYPE.PNG || type === SKELETONIZEREQUESTIMAGETYPE.BMP) ? (await Jimp.read(Buffer.from(buffer))).grayscale() : this.convertToBitMapImage(type, buffer);
         const bmpImage = sourceImage.bitmap;
 
         // get the box
@@ -41,5 +42,33 @@ export class ImageConverter {
 
         const data = await imageWithWhiteBorder.getBufferAsync(Jimp.MIME_BMP);
         return new BitMapBuffer(data, this.config.imageHeight, this.config.imageWidth);
+    }
+
+    private convertToBitMapImage(type: SKELETONIZEREQUESTIMAGETYPE, buffer: Buffer): Jimp {
+        if (type !== SKELETONIZEREQUESTIMAGETYPE.BINARYSTRINGWITHNEWLINE) {
+            throw Error('unsupported type ' + type);
+        }
+
+        const binaryStringWithNewLine = buffer.toString();
+        const binaryMat = binaryStringWithNewLine.split('\n');
+
+        const rows = binaryMat.length;
+        const cols = binaryMat[0].length;
+        
+        const bmpImage = new Jimp(cols, rows, 'white').bitmap
+
+        let index = 0
+
+        for (let i = 0; i < bmpImage.height; i++) {
+            for (let j = 0; j < bmpImage.width; j++) {
+                if (binaryMat[i].charAt(j) === '1') {
+                    bmpImage.data[index + 1] = bmpImage.data[index + 2] = bmpImage.data[index + 3] = 0; // 0 for black 
+                }
+
+                index += 4
+            }
+        }
+
+        return new Jimp(bmpImage);
     }
 }

@@ -2,8 +2,8 @@ import { httpsUrl } from '../utils';
 import axios from 'axios';
 import https from 'https';
 import fs from 'fs/promises';
-import { SkeletonizeResponse } from '../../../src/types/skeletonizeTypes';
-import { ungzip } from 'node-gzip';
+import { COMPRESSION, SKELETONIZEREQUESTIMAGETYPE, SkeletonizeResponse } from '../../../src/types/skeletonizeTypes';
+import { gzip, ungzip } from 'node-gzip';
 import { decode } from 'bmp-js';
 import { Config } from '../../../src/config';
 import { TRANSFORMEDTYPE } from '../../../src/types/skeletonizeTypes';
@@ -33,26 +33,46 @@ describe('skeletonize request', () => {
 
             const response = await axiosClient.post(skeletonizeUrl, {
                 name: 'someImage',
-                type: 'png',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
                 data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP
             });
 
             expect(response.status).toEqual(200);
-            expect(response.data.compression).toEqual('gzip');
+            expect(response.data.compression).toEqual(COMPRESSION.GZIP);
             expect(response.data).toHaveProperty('grayScale');
             expect(response.data).toHaveProperty('transformedData');
         });
 
-        it('should respond with 200 and response with image buffer data ', async () => {
+        it('should respond with 200 and response with image buffer data compressed', async () => {
+            const sampleImageUrl = './test/integration/data/running_man.png';
+            const data = await fs.readFile(sampleImageUrl);
+            const arrayBuffer = Buffer.from(await gzip(data)).toString('base64');
+
+            const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
+                name: 'someImage',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.GZIP,
+                data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP
+            });
+
+            const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
+            await fs.writeFile('./test/integration/data/running_man_bitmap_test.bmp', unzipped, { flag: 'w+' });
+            expect(response.data.grayScale).toBeDefined();
+        });
+
+        it('should respond with 200 and response with compressed buffer data ', async () => {
             const sampleImageUrl = './test/integration/data/running_man.png';
             const data = await fs.readFile(sampleImageUrl);
             const arrayBuffer = Buffer.from(data).toString('base64');
 
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
-                type: 'png',
-                compression: 'gzip',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.NONE,
                 data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP
             });
 
             const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
@@ -120,9 +140,10 @@ describe('skeletonize request', () => {
 
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
-                type: 'png',
-                compression: 'gzip',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.NONE,
                 data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP,
                 returnImageHeight: 50,
                 returnImageWidth: 40,
             });
@@ -213,9 +234,10 @@ describe('skeletonize request', () => {
 
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
-                type: 'png',
-                compression: 'gzip',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.NONE,
                 data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP,
                 returnImageHeight: 50,
                 returnImageWidth: 40,
             });
@@ -286,9 +308,10 @@ describe('skeletonize request', () => {
 
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
-                type: 'png',
-                compression: 'gzip',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.NONE,
                 data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP,
                 returnImageHeight: 50,
                 returnImageWidth: 40,
             });
@@ -361,9 +384,10 @@ describe('skeletonize request', () => {
 
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
-                type: 'png',
-                compression: 'gzip',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.NONE,
                 data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP,
                 returnImageHeight: 50,
                 returnImageWidth: 40,
             });
@@ -384,9 +408,10 @@ describe('skeletonize request', () => {
 
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
-                type: 'png',
-                compression: 'gzip',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.NONE,
                 data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP,
                 returnImageHeight: 150,
                 returnImageWidth: 120,
             });
@@ -408,9 +433,10 @@ describe('skeletonize request', () => {
 
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
-                type: 'png',
-                compression: 'gzip',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.NONE,
                 data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP,
             });
 
             const strokes = response.data.transformedData;

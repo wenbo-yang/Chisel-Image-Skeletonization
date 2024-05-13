@@ -1,8 +1,9 @@
 export interface SkeletonizeRequestBody {
     name: string;
-    type: string;
-    compression: string;
+    type: SKELETONIZEREQUESTIMAGETYPE;
+    compression: COMPRESSION;
     data: string;
+    returnCompression: COMPRESSION;
     returnImageHeight?: number;
     returnImageWidth?: number;
 }
@@ -27,10 +28,17 @@ export enum TRANSFORMEDTYPE {
     SKELETON = 'SKELETON',
 }
 
+export enum SKELETONIZEREQUESTIMAGETYPE {
+    PNG = 'PNG',
+    BMP = 'BMP',
+    BINARYSTRINGWITHNEWLINE = 'BINARYSTRINGWITHNEWLINE'
+}
+
 export type SkeletonizeResponse = SkeletonizedImage;
 
 export enum COMPRESSION {
-    GZIP = 'gzip',
+    GZIP = 'GZIP',
+    NONE = 'NONE'
 }
 
 export interface SkeletonizeProcessor {
@@ -41,3 +49,5 @@ export interface Point {
     r: number;
     c: number;
 }
+
+
