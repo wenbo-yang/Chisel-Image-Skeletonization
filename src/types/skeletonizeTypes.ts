@@ -31,14 +31,14 @@ export enum TRANSFORMEDTYPE {
 export enum SKELETONIZEREQUESTIMAGETYPE {
     PNG = 'PNG',
     BMP = 'BMP',
-    BINARYSTRINGWITHNEWLINE = 'BINARYSTRINGWITHNEWLINE'
+    BINARYSTRINGWITHNEWLINE = 'BINARYSTRINGWITHNEWLINE',
 }
 
 export type SkeletonizeResponse = SkeletonizedImage;
 
 export enum COMPRESSION {
     GZIP = 'GZIP',
-    NONE = 'NONE'
+    NONE = 'NONE',
 }
 
 export interface SkeletonizeProcessor {
@@ -49,5 +49,3 @@ export interface Point {
     r: number;
     c: number;
 }
-
-

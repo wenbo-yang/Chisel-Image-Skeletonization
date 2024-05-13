@@ -11,7 +11,7 @@ export class ImageConverter {
     }
 
     public async convertAndResizeToBMP(type: SKELETONIZEREQUESTIMAGETYPE, buffer: Buffer, convertedImageHeight?: number, convertedImageWidth?: number): Promise<BitMapBuffer> {
-        const sourceImage = (type === SKELETONIZEREQUESTIMAGETYPE.PNG || type === SKELETONIZEREQUESTIMAGETYPE.BMP) ? (await Jimp.read(Buffer.from(buffer))).grayscale() : this.convertToBitMapImage(type, buffer);
+        const sourceImage = type === SKELETONIZEREQUESTIMAGETYPE.PNG || type === SKELETONIZEREQUESTIMAGETYPE.BMP ? (await Jimp.read(Buffer.from(buffer))).grayscale() : this.convertToBitMapImage(type, buffer);
         const bmpImage = sourceImage.bitmap;
 
         // get the box
@@ -54,18 +54,18 @@ export class ImageConverter {
 
         const rows = binaryMat.length;
         const cols = binaryMat[0].length;
-        
-        const bmpImage = new Jimp(cols, rows, 'white').bitmap
 
-        let index = 0
+        const bmpImage = new Jimp(cols, rows, 'white').bitmap;
+
+        let index = 0;
 
         for (let i = 0; i < bmpImage.height; i++) {
             for (let j = 0; j < bmpImage.width; j++) {
                 if (binaryMat[i].charAt(j) === '1') {
-                    bmpImage.data[index + 1] = bmpImage.data[index + 2] = bmpImage.data[index + 3] = 0; // 0 for black 
+                    bmpImage.data[index + 1] = bmpImage.data[index + 2] = bmpImage.data[index + 3] = 0; // 0 for black
                 }
 
-                index += 4
+                index += 4;
             }
         }
 

@@ -35,7 +35,7 @@ describe('skeletonize request', () => {
                 name: 'someImage',
                 type: SKELETONIZEREQUESTIMAGETYPE.PNG,
                 data: arrayBuffer,
-                returnCompression: COMPRESSION.GZIP
+                returnCompression: COMPRESSION.GZIP,
             });
 
             expect(response.status).toEqual(200);
@@ -54,7 +54,7 @@ describe('skeletonize request', () => {
                 type: SKELETONIZEREQUESTIMAGETYPE.PNG,
                 compression: COMPRESSION.GZIP,
                 data: arrayBuffer,
-                returnCompression: COMPRESSION.GZIP
+                returnCompression: COMPRESSION.GZIP,
             });
 
             const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
@@ -72,7 +72,7 @@ describe('skeletonize request', () => {
                 type: SKELETONIZEREQUESTIMAGETYPE.PNG,
                 compression: COMPRESSION.NONE,
                 data: arrayBuffer,
-                returnCompression: COMPRESSION.GZIP
+                returnCompression: COMPRESSION.GZIP,
             });
 
             const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
