@@ -7,6 +7,7 @@ import { gzip, ungzip } from 'node-gzip';
 import { decode } from 'bmp-js';
 import { Config } from '../../../src/config';
 import { TRANSFORMEDTYPE } from '../../../src/types/skeletonizeTypes';
+import Jimp from 'jimp';
 
 const axiosClient = axios.create({
     httpsAgent: new https.Agent({
@@ -426,7 +427,7 @@ describe('skeletonize request', () => {
             expect(response.data.transformedData[2].stroke.split('\n')[0].length).toEqual(120);
         });
 
-        it('should return image with requested height and width', async () => {
+        it('should return image with default height and width', async () => {
             const sampleImageUrl = './test/integration/data/running_man.png';
             const data = await fs.readFile(sampleImageUrl);
             const arrayBuffer = Buffer.from(data).toString('base64');
@@ -439,10 +440,96 @@ describe('skeletonize request', () => {
                 returnCompression: COMPRESSION.GZIP,
             });
 
-            const strokes = response.data.transformedData;
             const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
             await fs.writeFile('./test/integration/data/running_man_default_size_test.bmp', unzipped, { flag: 'w+' });
+            await fs.writeFile('./test/integration/data/output_for_character_training_test.json', JSON.stringify(response.data), { flag: 'w+' });
 
+            expect(await fs.readFile('./test/integration/data/output_for_character_training_test.json')).toBeDefined();
+        });
+        
+        it('should respond with 200, after sending binary with new line breaks', async () => {
+            const sampleImageUrl = './test/integration/data/running_man.png';
+            const data = await fs.readFile(sampleImageUrl);
+            const arrayBuffer = Buffer.from(data);
+
+            const grayscaleWhiteThreshold = (new Config()).grayScaleWhiteThreshold;
+            const bmpImage = (await Jimp.read(data)).grayscale().bitmap;
+            const binaryMat = (new Array<string>(bmpImage.height)).map(s => s = '');
+            let index = 0;
+            for (let i = 0; i < bmpImage.height; i++) {
+                for (let j = 0; j < bmpImage.width; j++) {
+                    if ((bmpImage.data[index + 1] + bmpImage.data[index + 2] + bmpImage.data[index + 3]) / 3 <= grayscaleWhiteThreshold) {
+                        binaryMat[i] = binaryMat[i] === undefined ?  '1' : binaryMat[i] + '1'
+                    }
+                    else {
+                        binaryMat[i] = binaryMat[i] === undefined ?  '0' : binaryMat[i] + '0'
+                    }
+    
+                    index += 4;
+                }
+            }
+
+            const binaryStringWithNewLine = binaryMat.join('\n');
+
+            const response = await axiosClient.post(skeletonizeUrl, {
+                name: 'someImage',
+                type: SKELETONIZEREQUESTIMAGETYPE.BINARYSTRINGWITHNEWLINE,
+                compression: COMPRESSION.NONE,
+                data: Buffer.from(binaryStringWithNewLine).toString('base64'),
+                returnCompression: COMPRESSION.GZIP
+            });
+
+            expect(response.status).toEqual(200);
+            expect(response.data.compression).toEqual(COMPRESSION.GZIP);
+            expect(response.data).toHaveProperty('grayScale');
+            expect(response.data).toHaveProperty('transformedData');
+
+            const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
+            await fs.writeFile('./test/integration/data/running_man_default_size_test.bmp', unzipped, { flag: 'w+' });
+            await fs.writeFile('./test/integration/data/output_for_character_training_test.json', JSON.stringify(response.data), { flag: 'w+' });
+
+            expect(await fs.readFile('./test/integration/data/output_for_character_training_test.json')).toBeDefined();
+        });
+
+        it('should respond with 200, after sending compressed binary with new line breaks', async () => {
+            const sampleImageUrl = './test/integration/data/running_man.png';
+            const data = await fs.readFile(sampleImageUrl);
+            const arrayBuffer = Buffer.from(data);
+
+            const grayscaleWhiteThreshold = (new Config()).grayScaleWhiteThreshold;
+            const bmpImage = (await Jimp.read(data)).grayscale().bitmap;
+            const binaryMat = (new Array<string>(bmpImage.height)).map(s => s = '');
+            let index = 0;
+            for (let i = 0; i < bmpImage.height; i++) {
+                for (let j = 0; j < bmpImage.width; j++) {
+                    if ((bmpImage.data[index + 1] + bmpImage.data[index + 2] + bmpImage.data[index + 3]) / 3 <= grayscaleWhiteThreshold) {
+                        binaryMat[i] = binaryMat[i] === undefined ?  '1' : binaryMat[i] + '1'
+                    }
+                    else {
+                        binaryMat[i] = binaryMat[i] === undefined ?  '0' : binaryMat[i] + '0'
+                    }
+    
+                    index += 4;
+                }
+            }
+
+            const binaryStringWithNewLine = binaryMat.join('\n');
+
+            const response = await axiosClient.post(skeletonizeUrl, {
+                name: 'someImage',
+                type: SKELETONIZEREQUESTIMAGETYPE.BINARYSTRINGWITHNEWLINE,
+                compression: COMPRESSION.GZIP,
+                data: (await gzip(binaryStringWithNewLine)).toString('base64'),
+                returnCompression: COMPRESSION.GZIP
+            });
+
+            expect(response.status).toEqual(200);
+            expect(response.data.compression).toEqual(COMPRESSION.GZIP);
+            expect(response.data).toHaveProperty('grayScale');
+            expect(response.data).toHaveProperty('transformedData');
+
+            const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
+            await fs.writeFile('./test/integration/data/running_man_default_size_test.bmp', unzipped, { flag: 'w+' });
             await fs.writeFile('./test/integration/data/output_for_character_training_test.json', JSON.stringify(response.data), { flag: 'w+' });
 
             expect(await fs.readFile('./test/integration/data/output_for_character_training_test.json')).toBeDefined();

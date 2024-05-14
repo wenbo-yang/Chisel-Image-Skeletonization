@@ -23,7 +23,7 @@ export class ImageConverter {
 
         for (let i = 0; i < bmpImage.height; i++) {
             for (let j = 0; j < bmpImage.width; j++) {
-                if ((bmpImage.data[index + 1] + bmpImage.data[index + 2] + bmpImage.data[index + 3]) / 3 <= this.config.grayScaleWhiteThreshold) {
+                if ((bmpImage.data[index] + bmpImage.data[index + 1] + bmpImage.data[index + 2]) / 3 <= this.config.grayScaleWhiteThreshold) {
                     top = Math.min(i, top);
                     bottom = Math.max(i, bottom);
                     left = Math.min(j, left);
@@ -48,7 +48,7 @@ export class ImageConverter {
         if (type !== SKELETONIZEREQUESTIMAGETYPE.BINARYSTRINGWITHNEWLINE) {
             throw Error('unsupported type ' + type);
         }
-
+        
         const binaryStringWithNewLine = buffer.toString();
         const binaryMat = binaryStringWithNewLine.split('\n');
 
@@ -62,7 +62,8 @@ export class ImageConverter {
         for (let i = 0; i < bmpImage.height; i++) {
             for (let j = 0; j < bmpImage.width; j++) {
                 if (binaryMat[i].charAt(j) === '1') {
-                    bmpImage.data[index + 1] = bmpImage.data[index + 2] = bmpImage.data[index + 3] = 0; // 0 for black
+                    bmpImage.data[index] = bmpImage.data[index + 1] = bmpImage.data[index + 2] = 0; // rgb black
+                    bmpImage.data[index + 3] = 255; // alpha for black
                 }
 
                 index += 4;
