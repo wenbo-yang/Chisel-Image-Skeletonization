@@ -2,11 +2,12 @@ import { httpsUrl } from '../utils';
 import axios from 'axios';
 import https from 'https';
 import fs from 'fs/promises';
-import { SkeletonizeResponse } from '../../../src/types/skeletonizeTypes';
-import { ungzip } from 'node-gzip';
+import { COMPRESSION, SKELETONIZEREQUESTIMAGETYPE, SkeletonizeResponse } from '../../../src/types/skeletonizeTypes';
+import { gzip, ungzip } from 'node-gzip';
 import { decode } from 'bmp-js';
 import { Config } from '../../../src/config';
 import { TRANSFORMEDTYPE } from '../../../src/types/skeletonizeTypes';
+import Jimp from 'jimp';
 
 const axiosClient = axios.create({
     httpsAgent: new https.Agent({
@@ -33,26 +34,46 @@ describe('skeletonize request', () => {
 
             const response = await axiosClient.post(skeletonizeUrl, {
                 name: 'someImage',
-                type: 'png',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
                 data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP,
             });
 
             expect(response.status).toEqual(200);
-            expect(response.data.compression).toEqual('gzip');
+            expect(response.data.compression).toEqual(COMPRESSION.GZIP);
             expect(response.data).toHaveProperty('grayScale');
             expect(response.data).toHaveProperty('transformedData');
         });
 
-        it('should respond with 200 and response with image buffer data ', async () => {
+        it('should respond with 200 and response with image buffer data compressed', async () => {
+            const sampleImageUrl = './test/integration/data/running_man.png';
+            const data = await fs.readFile(sampleImageUrl);
+            const arrayBuffer = Buffer.from(await gzip(data)).toString('base64');
+
+            const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
+                name: 'someImage',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.GZIP,
+                data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP,
+            });
+
+            const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
+            await fs.writeFile('./test/integration/data/running_man_bitmap_test.bmp', unzipped, { flag: 'w+' });
+            expect(response.data.grayScale).toBeDefined();
+        });
+
+        it('should respond with 200 and response with compressed buffer data ', async () => {
             const sampleImageUrl = './test/integration/data/running_man.png';
             const data = await fs.readFile(sampleImageUrl);
             const arrayBuffer = Buffer.from(data).toString('base64');
 
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
-                type: 'png',
-                compression: 'gzip',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.NONE,
                 data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP,
             });
 
             const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
@@ -120,9 +141,10 @@ describe('skeletonize request', () => {
 
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
-                type: 'png',
-                compression: 'gzip',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.NONE,
                 data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP,
                 returnImageHeight: 50,
                 returnImageWidth: 40,
             });
@@ -213,9 +235,10 @@ describe('skeletonize request', () => {
 
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
-                type: 'png',
-                compression: 'gzip',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.NONE,
                 data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP,
                 returnImageHeight: 50,
                 returnImageWidth: 40,
             });
@@ -286,9 +309,10 @@ describe('skeletonize request', () => {
 
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
-                type: 'png',
-                compression: 'gzip',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.NONE,
                 data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP,
                 returnImageHeight: 50,
                 returnImageWidth: 40,
             });
@@ -361,9 +385,10 @@ describe('skeletonize request', () => {
 
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
-                type: 'png',
-                compression: 'gzip',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.NONE,
                 data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP,
                 returnImageHeight: 50,
                 returnImageWidth: 40,
             });
@@ -384,9 +409,10 @@ describe('skeletonize request', () => {
 
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
-                type: 'png',
-                compression: 'gzip',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.NONE,
                 data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP,
                 returnImageHeight: 150,
                 returnImageWidth: 120,
             });
@@ -401,22 +427,101 @@ describe('skeletonize request', () => {
             expect(response.data.transformedData[2].stroke.split('\n')[0].length).toEqual(120);
         });
 
-        it('should return image with requested height and width', async () => {
+        it('should return image with default height and width', async () => {
             const sampleImageUrl = './test/integration/data/running_man.png';
             const data = await fs.readFile(sampleImageUrl);
             const arrayBuffer = Buffer.from(data).toString('base64');
 
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'someImage',
-                type: 'png',
-                compression: 'gzip',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.NONE,
                 data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP,
             });
 
-            const strokes = response.data.transformedData;
             const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
             await fs.writeFile('./test/integration/data/running_man_default_size_test.bmp', unzipped, { flag: 'w+' });
+            await fs.writeFile('./test/integration/data/output_for_character_training_test.json', JSON.stringify(response.data), { flag: 'w+' });
 
+            expect(await fs.readFile('./test/integration/data/output_for_character_training_test.json')).toBeDefined();
+        });
+
+        it('should respond with 200, after sending binary with new line breaks', async () => {
+            const sampleImageUrl = './test/integration/data/running_man.png';
+            const data = await fs.readFile(sampleImageUrl);
+            const grayscaleWhiteThreshold = new Config().grayScaleWhiteThreshold;
+            const sourceImage = (await Jimp.read(data)).grayscale();
+            const binaryMat = new Array<string>(sourceImage.getHeight()).map((s) => (s = ''));
+
+            for (let i = 0; i < sourceImage.getHeight(); i++) {
+                for (let j = 0; j < sourceImage.getWidth(); j++) {
+                    const rgba = Jimp.intToRGBA(sourceImage.getPixelColor(j, i));
+                    if ((rgba.r + rgba.g + rgba.b) / 3 <= grayscaleWhiteThreshold) {
+                        binaryMat[i] = binaryMat[i] === undefined ? '1' : binaryMat[i] + '1';
+                    } else {
+                        binaryMat[i] = binaryMat[i] === undefined ? '0' : binaryMat[i] + '0';
+                    }
+                }
+            }
+
+            const binaryStringWithNewLine = binaryMat.join('\n');
+
+            const response = await axiosClient.post(skeletonizeUrl, {
+                name: 'someImage',
+                type: SKELETONIZEREQUESTIMAGETYPE.BINARYSTRINGWITHNEWLINE,
+                compression: COMPRESSION.NONE,
+                data: Buffer.from(binaryStringWithNewLine).toString('base64'),
+                returnCompression: COMPRESSION.GZIP,
+            });
+
+            expect(response.status).toEqual(200);
+            expect(response.data.compression).toEqual(COMPRESSION.GZIP);
+            expect(response.data).toHaveProperty('grayScale');
+            expect(response.data).toHaveProperty('transformedData');
+
+            const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
+            await fs.writeFile('./test/integration/data/running_man_default_size_test.bmp', unzipped, { flag: 'w+' });
+            await fs.writeFile('./test/integration/data/output_for_character_training_test.json', JSON.stringify(response.data), { flag: 'w+' });
+
+            expect(await fs.readFile('./test/integration/data/output_for_character_training_test.json')).toBeDefined();
+        });
+
+        it('should respond with 200, after sending compressed binary with new line breaks', async () => {
+            const sampleImageUrl = './test/integration/data/running_man.png';
+            const data = await fs.readFile(sampleImageUrl);
+            const grayscaleWhiteThreshold = new Config().grayScaleWhiteThreshold;
+            const sourceImage = (await Jimp.read(data)).grayscale();
+            const binaryMat = new Array<string>(sourceImage.getHeight()).map((s) => (s = ''));
+
+            for (let i = 0; i < sourceImage.getHeight(); i++) {
+                for (let j = 0; j < sourceImage.getWidth(); j++) {
+                    const rgba = Jimp.intToRGBA(sourceImage.getPixelColor(j, i));
+                    if ((rgba.r + rgba.g + rgba.b) / 3 <= grayscaleWhiteThreshold) {
+                        binaryMat[i] = binaryMat[i] === undefined ? '1' : binaryMat[i] + '1';
+                    } else {
+                        binaryMat[i] = binaryMat[i] === undefined ? '0' : binaryMat[i] + '0';
+                    }
+                }
+            }
+
+            const binaryStringWithNewLine = binaryMat.join('\n');
+
+            const response = await axiosClient.post(skeletonizeUrl, {
+                name: 'someImage',
+                type: SKELETONIZEREQUESTIMAGETYPE.BINARYSTRINGWITHNEWLINE,
+                compression: COMPRESSION.GZIP,
+                data: (await gzip(binaryStringWithNewLine)).toString('base64'),
+                returnCompression: COMPRESSION.GZIP,
+            });
+
+            expect(response.status).toEqual(200);
+            expect(response.data.compression).toEqual(COMPRESSION.GZIP);
+            expect(response.data).toHaveProperty('grayScale');
+            expect(response.data).toHaveProperty('transformedData');
+
+            const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
+            await fs.writeFile('./test/integration/data/running_man_default_size_test.bmp', unzipped, { flag: 'w+' });
             await fs.writeFile('./test/integration/data/output_for_character_training_test.json', JSON.stringify(response.data), { flag: 'w+' });
 
             expect(await fs.readFile('./test/integration/data/output_for_character_training_test.json')).toBeDefined();
