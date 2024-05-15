@@ -450,22 +450,19 @@ describe('skeletonize request', () => {
         it('should respond with 200, after sending binary with new line breaks', async () => {
             const sampleImageUrl = './test/integration/data/running_man.png';
             const data = await fs.readFile(sampleImageUrl);
-            const arrayBuffer = Buffer.from(data);
-
             const grayscaleWhiteThreshold = (new Config()).grayScaleWhiteThreshold;
-            const bmpImage = (await Jimp.read(data)).grayscale().bitmap;
-            const binaryMat = (new Array<string>(bmpImage.height)).map(s => s = '');
-            let index = 0;
-            for (let i = 0; i < bmpImage.height; i++) {
-                for (let j = 0; j < bmpImage.width; j++) {
-                    if ((bmpImage.data[index + 1] + bmpImage.data[index + 2] + bmpImage.data[index + 3]) / 3 <= grayscaleWhiteThreshold) {
-                        binaryMat[i] = binaryMat[i] === undefined ?  '1' : binaryMat[i] + '1'
+            const sourceImage = (await Jimp.read(data)).grayscale();
+            const binaryMat = new Array<string>(sourceImage.getHeight()).map(s => s = '');
+        
+            for (let i = 0; i < sourceImage.getHeight(); i++) {
+                for (let j = 0; j < sourceImage.getWidth(); j++) {
+                    const rgba = Jimp.intToRGBA(sourceImage.getPixelColor(j, i));
+                    if ((rgba.r + rgba.g + rgba.b) / 3 <= grayscaleWhiteThreshold) {
+                        binaryMat[i] = binaryMat[i] === undefined ?  '1' : binaryMat[i] + '1';
                     }
                     else {
                         binaryMat[i] = binaryMat[i] === undefined ?  '0' : binaryMat[i] + '0'
                     }
-    
-                    index += 4;
                 }
             }
 
@@ -494,22 +491,19 @@ describe('skeletonize request', () => {
         it('should respond with 200, after sending compressed binary with new line breaks', async () => {
             const sampleImageUrl = './test/integration/data/running_man.png';
             const data = await fs.readFile(sampleImageUrl);
-            const arrayBuffer = Buffer.from(data);
-
             const grayscaleWhiteThreshold = (new Config()).grayScaleWhiteThreshold;
-            const bmpImage = (await Jimp.read(data)).grayscale().bitmap;
-            const binaryMat = (new Array<string>(bmpImage.height)).map(s => s = '');
-            let index = 0;
-            for (let i = 0; i < bmpImage.height; i++) {
-                for (let j = 0; j < bmpImage.width; j++) {
-                    if ((bmpImage.data[index + 1] + bmpImage.data[index + 2] + bmpImage.data[index + 3]) / 3 <= grayscaleWhiteThreshold) {
-                        binaryMat[i] = binaryMat[i] === undefined ?  '1' : binaryMat[i] + '1'
+            const sourceImage = (await Jimp.read(data)).grayscale();
+            const binaryMat = (new Array<string>(sourceImage.getHeight())).map(s => s = '');
+            
+            for (let i = 0; i < sourceImage.getHeight(); i++) {
+                for (let j = 0; j < sourceImage.getWidth(); j++) {
+                    const rgba = Jimp.intToRGBA(sourceImage.getPixelColor(j, i));
+                    if ((rgba.r + rgba.g + rgba.b) / 3 <= grayscaleWhiteThreshold) {
+                        binaryMat[i] = binaryMat[i] === undefined ?  '1' : binaryMat[i] + '1';
                     }
                     else {
                         binaryMat[i] = binaryMat[i] === undefined ?  '0' : binaryMat[i] + '0'
                     }
-    
-                    index += 4;
                 }
             }
 

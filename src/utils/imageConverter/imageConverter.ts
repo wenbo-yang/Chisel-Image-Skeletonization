@@ -11,26 +11,29 @@ export class ImageConverter {
     }
 
     public async convertAndResizeToBMP(type: SKELETONIZEREQUESTIMAGETYPE, buffer: Buffer, convertedImageHeight?: number, convertedImageWidth?: number): Promise<BitMapBuffer> {
-        const sourceImage = type === SKELETONIZEREQUESTIMAGETYPE.PNG || type === SKELETONIZEREQUESTIMAGETYPE.BMP ? (await Jimp.read(Buffer.from(buffer))).grayscale() : this.convertToBitMapImage(type, buffer);
-        const bmpImage = sourceImage.bitmap;
+        let sourceImage: Jimp;
+        if (type === SKELETONIZEREQUESTIMAGETYPE.PNG || type === SKELETONIZEREQUESTIMAGETYPE.BMP) {
+            sourceImage = (await Jimp.read(Buffer.from(buffer))).grayscale();
+        } 
+        else {
+            sourceImage = this.convertToBitmapGrayImage(type, buffer).grayscale();
+        }
 
         // get the box
         let top = Number.MAX_VALUE;
         let bottom = Number.MIN_VALUE;
         let right = Number.MIN_VALUE;
         let left = Number.MAX_VALUE;
-        let index = 0;
 
-        for (let i = 0; i < bmpImage.height; i++) {
-            for (let j = 0; j < bmpImage.width; j++) {
-                if ((bmpImage.data[index] + bmpImage.data[index + 1] + bmpImage.data[index + 2]) / 3 <= this.config.grayScaleWhiteThreshold) {
+        for (let i = 0; i < sourceImage.getHeight(); i++) {
+            for (let j = 0; j < sourceImage.getWidth(); j++) {
+                const rgba = Jimp.intToRGBA(sourceImage.getPixelColor(j, i));
+                if ((rgba.r + rgba.g + rgba.b) / 3 <= this.config.grayScaleWhiteThreshold) {
                     top = Math.min(i, top);
                     bottom = Math.max(i, bottom);
                     left = Math.min(j, left);
                     right = Math.max(j, right);
                 }
-
-                index += 4;
             }
         }
 
@@ -44,7 +47,7 @@ export class ImageConverter {
         return new BitMapBuffer(data, this.config.imageHeight, this.config.imageWidth);
     }
 
-    private convertToBitMapImage(type: SKELETONIZEREQUESTIMAGETYPE, buffer: Buffer): Jimp {
+    private convertToBitmapGrayImage(type: SKELETONIZEREQUESTIMAGETYPE, buffer: Buffer): Jimp {
         if (type !== SKELETONIZEREQUESTIMAGETYPE.BINARYSTRINGWITHNEWLINE) {
             throw Error('unsupported type ' + type);
         }
@@ -55,21 +58,17 @@ export class ImageConverter {
         const rows = binaryMat.length;
         const cols = binaryMat[0].length;
 
-        const bmpImage = new Jimp(cols, rows, 'white').bitmap;
+        const sourceImage = new Jimp(cols, rows, 'white');
+        const hexGrayColor = Jimp.rgbaToInt(255, 52, 42, 255);
 
-        let index = 0;
-
-        for (let i = 0; i < bmpImage.height; i++) {
-            for (let j = 0; j < bmpImage.width; j++) {
+        for (let i = 0; i < sourceImage.bitmap.height; i++) {
+            for (let j = 0; j < sourceImage.bitmap.width; j++) {
                 if (binaryMat[i].charAt(j) === '1') {
-                    bmpImage.data[index] = bmpImage.data[index + 1] = bmpImage.data[index + 2] = 0; // rgb black
-                    bmpImage.data[index + 3] = 255; // alpha for black
+                    sourceImage.setPixelColor(hexGrayColor, j, i);
                 }
-
-                index += 4;
             }
         }
 
-        return new Jimp(bmpImage);
+        return sourceImage;
     }
 }
