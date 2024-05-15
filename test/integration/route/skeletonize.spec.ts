@@ -446,22 +446,21 @@ describe('skeletonize request', () => {
 
             expect(await fs.readFile('./test/integration/data/output_for_character_training_test.json')).toBeDefined();
         });
-        
+
         it('should respond with 200, after sending binary with new line breaks', async () => {
             const sampleImageUrl = './test/integration/data/running_man.png';
             const data = await fs.readFile(sampleImageUrl);
-            const grayscaleWhiteThreshold = (new Config()).grayScaleWhiteThreshold;
+            const grayscaleWhiteThreshold = new Config().grayScaleWhiteThreshold;
             const sourceImage = (await Jimp.read(data)).grayscale();
-            const binaryMat = new Array<string>(sourceImage.getHeight()).map(s => s = '');
-        
+            const binaryMat = new Array<string>(sourceImage.getHeight()).map((s) => (s = ''));
+
             for (let i = 0; i < sourceImage.getHeight(); i++) {
                 for (let j = 0; j < sourceImage.getWidth(); j++) {
                     const rgba = Jimp.intToRGBA(sourceImage.getPixelColor(j, i));
                     if ((rgba.r + rgba.g + rgba.b) / 3 <= grayscaleWhiteThreshold) {
-                        binaryMat[i] = binaryMat[i] === undefined ?  '1' : binaryMat[i] + '1';
-                    }
-                    else {
-                        binaryMat[i] = binaryMat[i] === undefined ?  '0' : binaryMat[i] + '0'
+                        binaryMat[i] = binaryMat[i] === undefined ? '1' : binaryMat[i] + '1';
+                    } else {
+                        binaryMat[i] = binaryMat[i] === undefined ? '0' : binaryMat[i] + '0';
                     }
                 }
             }
@@ -473,7 +472,7 @@ describe('skeletonize request', () => {
                 type: SKELETONIZEREQUESTIMAGETYPE.BINARYSTRINGWITHNEWLINE,
                 compression: COMPRESSION.NONE,
                 data: Buffer.from(binaryStringWithNewLine).toString('base64'),
-                returnCompression: COMPRESSION.GZIP
+                returnCompression: COMPRESSION.GZIP,
             });
 
             expect(response.status).toEqual(200);
@@ -491,18 +490,17 @@ describe('skeletonize request', () => {
         it('should respond with 200, after sending compressed binary with new line breaks', async () => {
             const sampleImageUrl = './test/integration/data/running_man.png';
             const data = await fs.readFile(sampleImageUrl);
-            const grayscaleWhiteThreshold = (new Config()).grayScaleWhiteThreshold;
+            const grayscaleWhiteThreshold = new Config().grayScaleWhiteThreshold;
             const sourceImage = (await Jimp.read(data)).grayscale();
-            const binaryMat = (new Array<string>(sourceImage.getHeight())).map(s => s = '');
-            
+            const binaryMat = new Array<string>(sourceImage.getHeight()).map((s) => (s = ''));
+
             for (let i = 0; i < sourceImage.getHeight(); i++) {
                 for (let j = 0; j < sourceImage.getWidth(); j++) {
                     const rgba = Jimp.intToRGBA(sourceImage.getPixelColor(j, i));
                     if ((rgba.r + rgba.g + rgba.b) / 3 <= grayscaleWhiteThreshold) {
-                        binaryMat[i] = binaryMat[i] === undefined ?  '1' : binaryMat[i] + '1';
-                    }
-                    else {
-                        binaryMat[i] = binaryMat[i] === undefined ?  '0' : binaryMat[i] + '0'
+                        binaryMat[i] = binaryMat[i] === undefined ? '1' : binaryMat[i] + '1';
+                    } else {
+                        binaryMat[i] = binaryMat[i] === undefined ? '0' : binaryMat[i] + '0';
                     }
                 }
             }
@@ -514,7 +512,7 @@ describe('skeletonize request', () => {
                 type: SKELETONIZEREQUESTIMAGETYPE.BINARYSTRINGWITHNEWLINE,
                 compression: COMPRESSION.GZIP,
                 data: (await gzip(binaryStringWithNewLine)).toString('base64'),
-                returnCompression: COMPRESSION.GZIP
+                returnCompression: COMPRESSION.GZIP,
             });
 
             expect(response.status).toEqual(200);

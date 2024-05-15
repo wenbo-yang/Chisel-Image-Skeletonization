@@ -14,8 +14,7 @@ export class ImageConverter {
         let sourceImage: Jimp;
         if (type === SKELETONIZEREQUESTIMAGETYPE.PNG || type === SKELETONIZEREQUESTIMAGETYPE.BMP) {
             sourceImage = (await Jimp.read(Buffer.from(buffer))).grayscale();
-        } 
-        else {
+        } else {
             sourceImage = this.convertToBitmapGrayImage(type, buffer).grayscale();
         }
 
@@ -51,7 +50,7 @@ export class ImageConverter {
         if (type !== SKELETONIZEREQUESTIMAGETYPE.BINARYSTRINGWITHNEWLINE) {
             throw Error('unsupported type ' + type);
         }
-        
+
         const binaryStringWithNewLine = buffer.toString();
         const binaryMat = binaryStringWithNewLine.split('\n');
 
@@ -59,12 +58,12 @@ export class ImageConverter {
         const cols = binaryMat[0].length;
 
         const sourceImage = new Jimp(cols, rows, 'white');
-        const hexGrayColor = Jimp.rgbaToInt(255, 52, 42, 255);
+        const hexRedColor = Jimp.rgbaToInt(255, 52, 42, 255);
 
         for (let i = 0; i < sourceImage.bitmap.height; i++) {
             for (let j = 0; j < sourceImage.bitmap.width; j++) {
                 if (binaryMat[i].charAt(j) === '1') {
-                    sourceImage.setPixelColor(hexGrayColor, j, i);
+                    sourceImage.setPixelColor(hexRedColor, j, i);
                 }
             }
         }
