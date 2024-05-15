@@ -14,8 +14,10 @@ export class ImageConverter {
         let sourceImage: Jimp;
         if (type === SKELETONIZEREQUESTIMAGETYPE.PNG || type === SKELETONIZEREQUESTIMAGETYPE.BMP) {
             sourceImage = (await Jimp.read(Buffer.from(buffer))).grayscale();
+        } else if (type === SKELETONIZEREQUESTIMAGETYPE.BINARYSTRINGWITHNEWLINE) {
+            sourceImage = this.convertToBitmapGrayImage(buffer).grayscale();
         } else {
-            sourceImage = this.convertToBitmapGrayImage(type, buffer).grayscale();
+            throw Error('unsupported type: ' + type);
         }
 
         // get the box
@@ -46,11 +48,7 @@ export class ImageConverter {
         return new BitMapBuffer(data, this.config.imageHeight, this.config.imageWidth);
     }
 
-    private convertToBitmapGrayImage(type: SKELETONIZEREQUESTIMAGETYPE, buffer: Buffer): Jimp {
-        if (type !== SKELETONIZEREQUESTIMAGETYPE.BINARYSTRINGWITHNEWLINE) {
-            throw Error('unsupported type ' + type);
-        }
-
+    private convertToBitmapGrayImage(buffer: Buffer): Jimp {
         const binaryStringWithNewLine = buffer.toString();
         const binaryMat = binaryStringWithNewLine.split('\n');
 
