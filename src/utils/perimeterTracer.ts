@@ -1,12 +1,12 @@
-import { Config } from '../config';
-import { Point, TRANSFORMEDTYPE, Transformed } from '../types/skeletonizeTypes';
+import { SkeletonizationServiceConfig } from '../config';
+import { ISkeletonizationServiceConfig, Point, TRANSFORMEDTYPE, Transformed } from '../types/skeletonizeTypes';
 import { convert2DMatToString, generate2DMatrix, getOffsetsFromPointList } from './imageProcessor/matUtilities';
 
 export class PerimeterTracer {
-    private config: Config;
+    private config: ISkeletonizationServiceConfig;
 
-    constructor(config?: Config) {
-        this.config = config || new Config();
+    constructor(config?: ISkeletonizationServiceConfig) {
+        this.config = config || new SkeletonizationServiceConfig();
     }
 
     public async trace(binaryMat: Array<number[]>): Promise<Transformed[]> {
@@ -56,6 +56,10 @@ export class PerimeterTracer {
                     islandPerimeters.push(islandPerimeter);
                 }
             }
+        }
+
+        if (islandPerimeters.length > 1) {
+            throw new Error('composite image is not supported')
         }
 
         return islandPerimeters;

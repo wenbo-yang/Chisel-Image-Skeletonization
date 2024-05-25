@@ -1,18 +1,18 @@
 import { gzip, ungzip } from 'node-gzip';
-import { COMPRESSION, SKELETONIZEREQUESTIMAGETYPE, SkeletonizedImage, TRANSFORMEDTYPE } from '../types/skeletonizeTypes';
+import { COMPRESSION, ISkeletonizationServiceConfig, SKELETONIZEREQUESTIMAGETYPE, SkeletonizedImage, TRANSFORMEDTYPE } from '../types/skeletonizeTypes';
 import { ImageConverter } from '../utils/imageConverter/imageConverter';
 import { Skeletonizer } from '../utils/skeletonizer';
 import { convert2DMatToString, convertDataToZeroOneMat, logMat } from '../utils/imageProcessor/matUtilities';
-import { Config } from '../config';
 import { PerimeterTracer } from '../utils/perimeterTracer';
+import { SkeletonizationServiceConfig } from '../config';
 
 export class SkeletonizeModel {
     private imageConverter: ImageConverter;
     private skeletonizer: Skeletonizer;
-    private config: Config;
+    private config: ISkeletonizationServiceConfig;
     private perimeterTracer: PerimeterTracer;
-    constructor(config?: Config, imageConverter?: ImageConverter, skeletonizer?: Skeletonizer, perimeterTracer?: PerimeterTracer) {
-        this.config = config || new Config();
+    constructor(config?: ISkeletonizationServiceConfig, imageConverter?: ImageConverter, skeletonizer?: Skeletonizer, perimeterTracer?: PerimeterTracer) {
+        this.config = config || new SkeletonizationServiceConfig();
         this.imageConverter = imageConverter || new ImageConverter(this.config);
         this.skeletonizer = skeletonizer || new Skeletonizer(this.config);
         this.perimeterTracer = perimeterTracer || new PerimeterTracer(this.config);

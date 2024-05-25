@@ -1,17 +1,8 @@
 import * as staticServiceConfig from '../configs/service.config.json';
 import * as globalServicePortMappings from '../Chisel-Global-Service-Configs/configs/globalServicePortMappings.json';
+import { ISkeletonizationServiceConfig, ServiceConfig, ServicePorts } from './types/skeletonizeTypes';
 
-export interface ServiceConfig {
-    serviceName: string;
-    shortName: string;
-}
-
-export interface ServicePorts {
-    http: number;
-    https: number;
-}
-
-export class Config {
+export class SkeletonizationServiceConfig implements ISkeletonizationServiceConfig {
     private serviceConfig: ServiceConfig;
     private globalServicePortMappings: any;
 

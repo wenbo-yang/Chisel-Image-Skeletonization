@@ -1,12 +1,12 @@
-import { Config } from '../../config';
-import { SkeletonizeProcessor } from '../../types/skeletonizeTypes';
+import { SkeletonizationServiceConfig } from '../../config';
+import { ISkeletonizationServiceConfig, SkeletonizeProcessor } from '../../types/skeletonizeTypes';
 import { zsThinning } from './zsThinning';
 
 export class SoftSkeletonizeProcessor implements SkeletonizeProcessor {
-    private config: Config;
+    private config: ISkeletonizationServiceConfig;
 
-    constructor(config?: Config) {
-        this.config = config || new Config();
+    constructor(config?: ISkeletonizationServiceConfig) {
+        this.config = config || new SkeletonizationServiceConfig();
     }
 
     public async thinning(binaryMat: Array<number[]>): Promise<Array<number[]>> {
