@@ -1,14 +1,14 @@
-import { Config } from '../config';
-import { SkeletonizeProcessor } from '../types/skeletonizeTypes';
+import { SkeletonizationServiceConfig } from '../config';
+import { ISkeletonizationServiceConfig, SkeletonizeProcessor } from '../types/skeletonizeTypes';
 import { convert2DMatToString } from './imageProcessor/matUtilities';
 import { SkeletonizeProcessorFactory } from './imageProcessor/skeletonizeProcessorFactory';
 
 export class Skeletonizer {
     private skeletonizeProcessor: SkeletonizeProcessor;
-    private config: Config;
+    private config: ISkeletonizationServiceConfig;
 
-    constructor(config?: Config, skeletonizeProcessor?: SkeletonizeProcessor) {
-        this.config = config || new Config();
+    constructor(config?: ISkeletonizationServiceConfig, skeletonizeProcessor?: SkeletonizeProcessor) {
+        this.config = config || new SkeletonizationServiceConfig();
         this.skeletonizeProcessor = skeletonizeProcessor || SkeletonizeProcessorFactory.makeSkeletonizeProcessor(this.config);
     }
 

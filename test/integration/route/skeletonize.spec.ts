@@ -5,7 +5,7 @@ import fs from 'fs/promises';
 import { COMPRESSION, SKELETONIZEREQUESTIMAGETYPE, SkeletonizeResponse } from '../../../src/types/skeletonizeTypes';
 import { gzip, ungzip } from 'node-gzip';
 import { decode } from 'bmp-js';
-import { Config } from '../../../src/config';
+import { SkeletonizationServiceConfig } from '../../../src/config';
 import { TRANSFORMEDTYPE } from '../../../src/types/skeletonizeTypes';
 import Jimp from 'jimp';
 
@@ -160,9 +160,9 @@ describe('skeletonize request', () => {
                 for (let j = 0; j < bmpData.width; j++) {
                     if (i === 0 || i === bmpData.height - 1 || j === 0 || j === bmpData.width - 1) {
                         row.push(0);
-                    } else if (bmpData.data[index + 1] > new Config().grayScaleWhiteThreshold) {
+                    } else if (bmpData.data[index + 1] > new SkeletonizationServiceConfig().grayScaleWhiteThreshold) {
                         row.push(0);
-                    } else if (bmpData.data[index + 1] <= new Config().grayScaleWhiteThreshold) {
+                    } else if (bmpData.data[index + 1] <= new SkeletonizationServiceConfig().grayScaleWhiteThreshold) {
                         row.push(1);
                     }
 
@@ -450,7 +450,7 @@ describe('skeletonize request', () => {
         it('should respond with 200, after sending binary with new line breaks', async () => {
             const sampleImageUrl = './test/integration/data/running_man.png';
             const data = await fs.readFile(sampleImageUrl);
-            const grayscaleWhiteThreshold = new Config().grayScaleWhiteThreshold;
+            const grayscaleWhiteThreshold = new SkeletonizationServiceConfig().grayScaleWhiteThreshold;
             const sourceImage = (await Jimp.read(data)).grayscale();
             const binaryMat = new Array<string>(sourceImage.getHeight()).map((s) => (s = ''));
 
@@ -490,7 +490,7 @@ describe('skeletonize request', () => {
         it('should respond with 200, after sending compressed binary with new line breaks', async () => {
             const sampleImageUrl = './test/integration/data/running_man.png';
             const data = await fs.readFile(sampleImageUrl);
-            const grayscaleWhiteThreshold = new Config().grayScaleWhiteThreshold;
+            const grayscaleWhiteThreshold = new SkeletonizationServiceConfig().grayScaleWhiteThreshold;
             const sourceImage = (await Jimp.read(data)).grayscale();
             const binaryMat = new Array<string>(sourceImage.getHeight()).map((s) => (s = ''));
 

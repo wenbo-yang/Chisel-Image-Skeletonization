@@ -3,9 +3,9 @@ import http from 'http';
 import https from 'https';
 import fs from 'fs';
 import { ControllerFactory } from './controller/controllerFactory';
-import { Config } from './config';
+import { SkeletonizationServiceConfig } from './config';
 
-const config = new Config();
+const config = new SkeletonizationServiceConfig();
 
 const servicePorts = config.servicePorts;
 

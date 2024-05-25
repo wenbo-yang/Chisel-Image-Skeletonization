@@ -17,6 +17,8 @@ export interface SkeletonizedImage {
 
 export interface Transformed {
     type: TRANSFORMEDTYPE;
+    isPrimitive?: boolean;
+    primitiveType?: PRIMITIVETYPE;
     offset: Point;
     stroke: string;
 }
@@ -26,6 +28,25 @@ export enum TRANSFORMEDTYPE {
     PERIMETER = 'PERIMETER',
     SINGLESTROKE = 'SINGLESTROKE',
     SKELETON = 'SKELETON',
+}
+
+export enum PRIMITIVETYPE {
+    POINT = 'POINT',
+    LINE = 'LINE',
+    ARC = 'ARC',
+    TRIANGLE = 'TRIANGLE',
+    SQUARE = 'SQUARE',
+    RECTANGLE = 'RECTANGLE',
+    PARALLELOGRAM = 'PARALLELEGRAM',
+    TRAPEZOID = 'TRAPEZOID',
+    QUADRILATERAL = 'QUADRILATERAL',
+    PENTAGON = 'PENTAGON',
+    HEXAGON = 'HEXAGON',
+    HEPTAGON = 'HEPTAGON',
+    OCTAGON = 'OCTAGON',
+    POLYGON = 'POLYGON',
+    CIRCLE = 'CIRCLE',
+    ELLIPTICAL = 'ELLIPTICAL',
 }
 
 export enum SKELETONIZEREQUESTIMAGETYPE {
@@ -48,4 +69,24 @@ export interface SkeletonizeProcessor {
 export interface Point {
     r: number;
     c: number;
+}
+
+export interface ISkeletonizationServiceConfig {
+    imageHeight: number;
+    imageWidth: number;
+    grayScaleWhiteThreshold: number;
+    shortName: string;
+    useGpuSkeletonizer: boolean;
+    env: string;
+    servicePorts: ServicePorts;
+}
+
+export interface ServiceConfig {
+    serviceName: string;
+    shortName: string;
+}
+
+export interface ServicePorts {
+    http: number;
+    https: number;
 }

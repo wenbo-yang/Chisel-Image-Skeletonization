@@ -1,9 +1,10 @@
-import { Config } from '../config';
+import { SkeletonizationServiceConfig } from '../config';
+import { ISkeletonizationServiceConfig } from './skeletonizeTypes';
 
 export class RuleSet {
-    private config: Config;
+    private config: ISkeletonizationServiceConfig;
 
-    constructor(config?: Config) {
-        this.config = config || new Config();
+    constructor(config?: ISkeletonizationServiceConfig) {
+        this.config = config || new SkeletonizationServiceConfig();
     }
 }

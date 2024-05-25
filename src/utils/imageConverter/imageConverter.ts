@@ -1,13 +1,13 @@
 import Jimp from 'jimp';
 import { BitMapBuffer } from '../bitMapBuffer';
-import { Config } from '../../config';
-import { SKELETONIZEREQUESTIMAGETYPE } from '../../types/skeletonizeTypes';
+import { SkeletonizationServiceConfig } from '../../config';
+import { ISkeletonizationServiceConfig, SKELETONIZEREQUESTIMAGETYPE } from '../../types/skeletonizeTypes';
 
 export class ImageConverter {
-    private config: Config;
+    private config: ISkeletonizationServiceConfig;
 
-    constructor(config?: Config) {
-        this.config = config || new Config();
+    constructor(config?: ISkeletonizationServiceConfig) {
+        this.config = config || new SkeletonizationServiceConfig();
     }
 
     public async convertAndResizeToBMP(type: SKELETONIZEREQUESTIMAGETYPE, buffer: Buffer, convertedImageHeight?: number, convertedImageWidth?: number): Promise<BitMapBuffer> {

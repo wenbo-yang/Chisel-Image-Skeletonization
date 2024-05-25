@@ -1,5 +1,5 @@
-import { Config } from '../../config';
-import { SkeletonizeProcessor } from '../../types/skeletonizeTypes';
+import { SkeletonizationServiceConfig } from '../../config';
+import { ISkeletonizationServiceConfig, SkeletonizeProcessor } from '../../types/skeletonizeTypes';
 import { GPU } from 'gpu.js';
 import { getBlackPointFromMat, zsThinnigGetTargetPointsStep1WithRemovalMat, zsThinnigGetTargetPointsStep2WithRemovalMat } from './zsThinning';
 import { generate2DMatrix } from './matUtilities';
@@ -11,10 +11,10 @@ import { generate2DMatrix } from './matUtilities';
 // We are looking at 100x100 mat operation this is not going to be faster than cpu.
 
 export class GpuSkeletonizeProcessor implements SkeletonizeProcessor {
-    private config: Config;
+    private config: ISkeletonizationServiceConfig;
 
-    constructor(config?: Config) {
-        this.config = config || new Config();
+    constructor(config?: ISkeletonizationServiceConfig) {
+        this.config = config || new SkeletonizationServiceConfig();
     }
 
     public async thinning(binaryMat: Array<number[]>): Promise<Array<number[]>> {
