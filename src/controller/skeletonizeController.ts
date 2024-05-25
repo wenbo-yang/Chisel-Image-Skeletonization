@@ -5,7 +5,6 @@ import { ISkeletonizationServiceConfig, SkeletonizeRequestBody, SkeletonizeRespo
 import { SkeletonizationServiceConfig } from '../config';
 
 export class SkeletonizeController {
-
     private skeletonizeModel: SkeletonizeModel;
     private config: ISkeletonizationServiceConfig;
 
