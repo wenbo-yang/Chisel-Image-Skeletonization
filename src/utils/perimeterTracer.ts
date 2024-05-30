@@ -58,10 +58,6 @@ export class PerimeterTracer {
             }
         }
 
-        if (islandPerimeters.length > 1) {
-            throw new Error('composite image is not supported');
-        }
-
         return islandPerimeters;
     }
 
