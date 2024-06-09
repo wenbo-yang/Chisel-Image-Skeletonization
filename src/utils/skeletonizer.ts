@@ -1,6 +1,6 @@
+import { convertMatToNewLineSeparatedString } from '../../Chisel-Global-Common-Libraries/src/lib/binaryMatUtils';
 import { SkeletonizationServiceConfig } from '../config';
 import { ISkeletonizationServiceConfig, SkeletonizeProcessor } from '../types/skeletonizeTypes';
-import { convert2DMatToString } from './imageProcessor/matUtilities';
 import { SkeletonizeProcessorFactory } from './imageProcessor/skeletonizeProcessorFactory';
 
 export class Skeletonizer {
@@ -14,6 +14,6 @@ export class Skeletonizer {
 
     public async skeletonizeImage(binaryMat: Array<number[]>): Promise<string> {
         const skeleton = await this.skeletonizeProcessor.thinning(binaryMat);
-        return convert2DMatToString(skeleton);
+        return convertMatToNewLineSeparatedString(skeleton);
     }
 }

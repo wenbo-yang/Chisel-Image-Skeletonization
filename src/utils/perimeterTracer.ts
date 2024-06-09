@@ -1,6 +1,7 @@
 import { SkeletonizationServiceConfig } from '../config';
-import { ISkeletonizationServiceConfig, Point, TRANSFORMEDTYPE, Transformed } from '../types/skeletonizeTypes';
-import { convert2DMatToString, generate2DMatrix, getOffsetsFromPointList } from './imageProcessor/matUtilities';
+import { ISkeletonizationServiceConfig, TRANSFORMEDTYPE, Transformed } from '../types/skeletonizeTypes';
+import { convertMatToNewLineSeparatedString, generateMat, getOffsetsFromPointList } from '../../Chisel-Global-Common-Libraries/src/lib/binaryMatUtils';
+import { Point } from '../../Chisel-Global-Common-Libraries/src/types/commonTypes';
 
 export class PerimeterTracer {
     private config: ISkeletonizationServiceConfig;
@@ -22,7 +23,7 @@ export class PerimeterTracer {
         for (let i = 0; i < islandPerimeters.length; i++) {
             const offsets = getOffsetsFromPointList(islandPerimeters[i]);
             const islandPerimeterMat = this.mapIslandPerimeter(offsets, islandPerimeters[i]);
-            const islandPerimeterString = convert2DMatToString(islandPerimeterMat);
+            const islandPerimeterString = convertMatToNewLineSeparatedString(islandPerimeterMat);
 
             strokes.push({ type: TRANSFORMEDTYPE.PERIMETER, offset: { r: offsets[0].r - 1, c: offsets[0].c - 1 }, stroke: islandPerimeterString });
         }
@@ -31,7 +32,7 @@ export class PerimeterTracer {
     }
 
     private mapIslandPerimeter(offsets: Point[], islandPerimeter: Point[]): number[][] {
-        let islandPerimeterMat: Array<Array<number>> = generate2DMatrix(offsets[1].r - offsets[0].r + 3, offsets[1].c - offsets[0].c + 3);
+        let islandPerimeterMat: Array<Array<number>> = generateMat(offsets[1].r - offsets[0].r + 3, offsets[1].c - offsets[0].c + 3);
 
         for (let i = 0; i < islandPerimeter.length; i++) {
             islandPerimeterMat[islandPerimeter[i].r - offsets[0].r + 1][islandPerimeter[i].c - offsets[0].c + 1] = 1;
@@ -41,7 +42,7 @@ export class PerimeterTracer {
     }
 
     private findIslands(mat: number[][]): Array<Point[]> {
-        const visited: number[][] = generate2DMatrix(mat.length, mat[0].length);
+        const visited: number[][] = generateMat(mat.length, mat[0].length);
 
         const row = mat.length;
         const col = mat[0].length;

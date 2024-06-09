@@ -1,3 +1,5 @@
+import { Point } from '../../Chisel-Global-Common-Libraries/src/types/commonTypes';
+
 export interface SkeletonizeRequestBody {
     name: string;
     type: SKELETONIZEREQUESTIMAGETYPE;
@@ -64,11 +66,6 @@ export enum COMPRESSION {
 
 export interface SkeletonizeProcessor {
     thinning(binaryMat: Array<number[]>): Promise<Array<number[]>>;
-}
-
-export interface Point {
-    r: number;
-    c: number;
 }
 
 export interface ISkeletonizationServiceConfig {

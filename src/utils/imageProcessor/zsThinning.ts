@@ -1,4 +1,4 @@
-import { Point } from '../../types/skeletonizeTypes';
+import { Point } from '../../../Chisel-Global-Common-Libraries/src/types/commonTypes';
 import { PointSet } from './pointSet';
 
 export function zsThinning(mat: number[][]): number[][] {

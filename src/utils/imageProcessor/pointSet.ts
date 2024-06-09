@@ -1,7 +1,6 @@
+import { Point } from '../../../Chisel-Global-Common-Libraries/src/types/commonTypes';
+
 // fast removal and adding of points
-
-import { Point } from '../../types/skeletonizeTypes';
-
 export class PointSet {
     private offset: number;
     private points: Set<number>;

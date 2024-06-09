@@ -2,7 +2,7 @@ import { gzip, ungzip } from 'node-gzip';
 import { COMPRESSION, ISkeletonizationServiceConfig, SKELETONIZEREQUESTIMAGETYPE, SkeletonizedImage, TRANSFORMEDTYPE } from '../types/skeletonizeTypes';
 import { ImageConverter } from '../utils/imageConverter/imageConverter';
 import { Skeletonizer } from '../utils/skeletonizer';
-import { convert2DMatToString, convertDataToZeroOneMat, logMat } from '../utils/imageProcessor/matUtilities';
+import { convertBitmapDataToZeroOneMat, convertMatToNewLineSeparatedString } from '../../Chisel-Global-Common-Libraries/src/lib/binaryMatUtils';
 import { PerimeterTracer } from '../utils/perimeterTracer';
 import { SkeletonizationServiceConfig } from '../config';
 
@@ -20,7 +20,7 @@ export class SkeletonizeModel {
 
     public async tryskeletonize(type: SKELETONIZEREQUESTIMAGETYPE, compression: COMPRESSION, returnCompression: COMPRESSION, data: Buffer, returnImageHeight?: number, returnImageWidth?: number): Promise<SkeletonizedImage> {
         const bitmapImage = await this.imageConverter.convertAndResizeToBMP(type, compression === COMPRESSION.GZIP ? await this.uncompress(data) : data, returnImageHeight, returnImageWidth);
-        const binaryMat = await convertDataToZeroOneMat(bitmapImage, this.config.grayScaleWhiteThreshold);
+        const binaryMat = await convertBitmapDataToZeroOneMat(bitmapImage.imageBuffer, this.config.grayScaleWhiteThreshold);
         const perimeters = await this.perimeterTracer.trace(binaryMat);
         const skeleton = await this.skeletonizer.skeletonizeImage(binaryMat);
         const grayScaleImageData = Buffer.from(returnCompression === COMPRESSION.GZIP ? await this.compress(bitmapImage.imageBuffer) : bitmapImage.imageBuffer).toString('base64');
@@ -29,7 +29,7 @@ export class SkeletonizeModel {
             imageType: bitmapImage.imageType,
             grayScale: grayScaleImageData,
             transformedData: perimeters.concat([
-                { type: TRANSFORMEDTYPE.ORIGINAL, offset: { r: 0, c: 0 }, stroke: convert2DMatToString(binaryMat) },
+                { type: TRANSFORMEDTYPE.ORIGINAL, offset: { r: 0, c: 0 }, stroke: convertMatToNewLineSeparatedString(binaryMat) },
                 {
                     type: TRANSFORMEDTYPE.SKELETON,
                     offset: { r: 0, c: 0 },
