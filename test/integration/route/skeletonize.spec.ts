@@ -327,7 +327,7 @@ describe('skeletonize request', () => {
 
         it('should contain a original mat translated into binary string', async () => {
             // prettier-ignore
-            const expectedPerimeter = 
+            const original = 
                  '0000000000000000000000000000000000000000' + '\n' +
                  '0000000000000000000111111100000000000000' + '\n' +
                  '0000000000000000001111111100000000000000' + '\n' +
@@ -397,7 +397,7 @@ describe('skeletonize request', () => {
 
             expect(response.data.transformedData[2]).toBeDefined();
             expect(strokes.length).toEqual(3);
-            expect(strokes[1].stroke).toEqual(expectedPerimeter);
+            expect(strokes[1].stroke).toEqual(original);
             expect(strokes[1].type).toEqual(TRANSFORMEDTYPE.ORIGINAL);
         });
 
@@ -525,6 +525,72 @@ describe('skeletonize request', () => {
             await fs.writeFile('./test/integration/data/output_for_character_training_test.json', JSON.stringify(response.data), { flag: 'w+' });
 
             expect(await fs.readFile('./test/integration/data/output_for_character_training_test.json')).toBeDefined();
+        });
+
+        it('should respond with 200, after sending binary with new line breaks', async () => {
+            const sampleImageUrl = './test/integration/data/running_man.png';
+            const data = await fs.readFile(sampleImageUrl);
+            const grayscaleWhiteThreshold = new SkeletonizationServiceConfig().grayScaleWhiteThreshold;
+            const sourceImage = (await Jimp.read(data)).grayscale();
+            const binaryMat = new Array<string>(sourceImage.getHeight()).map((s) => (s = ''));
+
+            for (let i = 0; i < sourceImage.getHeight(); i++) {
+                for (let j = 0; j < sourceImage.getWidth(); j++) {
+                    const rgba = Jimp.intToRGBA(sourceImage.getPixelColor(j, i));
+                    if ((rgba.r + rgba.g + rgba.b) / 3 <= grayscaleWhiteThreshold) {
+                        binaryMat[i] = binaryMat[i] === undefined ? '1' : binaryMat[i] + '1';
+                    } else {
+                        binaryMat[i] = binaryMat[i] === undefined ? '0' : binaryMat[i] + '0';
+                    }
+                }
+            }
+
+            const binaryStringWithNewLine = binaryMat.join('\n');
+
+            const response = await axiosClient.post(skeletonizeUrl, {
+                name: 'someImage',
+                type: SKELETONIZEREQUESTIMAGETYPE.BINARYSTRINGWITHNEWLINE,
+                compression: COMPRESSION.NONE,
+                data: Buffer.from(binaryStringWithNewLine).toString('base64'),
+                returnCompression: COMPRESSION.GZIP,
+            });
+
+            expect(response.status).toEqual(200);
+            expect(response.data.compression).toEqual(COMPRESSION.GZIP);
+            expect(response.data).toHaveProperty('grayScale');
+            expect(response.data).toHaveProperty('transformedData');
+
+            const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
+            await fs.writeFile('./test/integration/data/running_man_default_size_test.bmp', unzipped, { flag: 'w+' });
+            await fs.writeFile('./test/integration/data/output_for_character_training_test.json', JSON.stringify(response.data), { flag: 'w+' });
+
+            expect(await fs.readFile('./test/integration/data/output_for_character_training_test.json')).toBeDefined();
+        });
+
+        it('should return test character with requested height and width', async () => {
+            // prettier-ignore
+            const sampleImageUrl = './test/integration/data/zou_character.png';
+            const data = await fs.readFile(sampleImageUrl);
+            const arrayBuffer = Buffer.from(data).toString('base64');
+
+            const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
+                name: 'someImage',
+                type: SKELETONIZEREQUESTIMAGETYPE.PNG,
+                compression: COMPRESSION.NONE,
+                data: arrayBuffer,
+                returnCompression: COMPRESSION.GZIP,
+                returnImageHeight: 50,
+                returnImageWidth: 50,
+            });
+
+            const strokes = response.data.transformedData;
+            const unzipped = await ungzip(Buffer.from(response.data.grayScale, 'base64'));
+            await fs.writeFile('./test/integration/data/zou_character_bitmap_upscaled_image_test.bmp', unzipped, { flag: 'w+' });
+
+            expect(response.data.transformedData[2]).toBeDefined();
+            expect(strokes.length).toEqual(3);
+            expect(response.data.transformedData[2].stroke.split('\n').length).toEqual(50);
+            expect(response.data.transformedData[2].stroke.split('\n')[0].length).toEqual(50);
         });
     });
 });
