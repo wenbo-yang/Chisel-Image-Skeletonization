@@ -1,7 +1,8 @@
 import Jimp from 'jimp';
 import { BitMapBuffer } from '../bitMapBuffer';
 import { SkeletonizationServiceConfig } from '../../config';
-import { ISkeletonizationServiceConfig, SKELETONIZEREQUESTIMAGETYPE } from '../../types/skeletonizeTypes';
+import { ISkeletonizationServiceConfig } from '../../types/skeletonizeTypes';
+import { IMAGEDATATYPE } from '../../../Chisel-Global-Common-Libraries/src/types/commonTypes';
 
 export class ImageConverter {
     private config: ISkeletonizationServiceConfig;
@@ -10,12 +11,12 @@ export class ImageConverter {
         this.config = config || new SkeletonizationServiceConfig();
     }
 
-    public async convertAndResizeToBMP(type: SKELETONIZEREQUESTIMAGETYPE, buffer: Buffer, convertedImageHeight?: number, convertedImageWidth?: number): Promise<BitMapBuffer> {
+    public async convertAndResizeToBMP(type: IMAGEDATATYPE, buffer: Buffer, convertedImageHeight?: number, convertedImageWidth?: number, grayScaleWhiteThreshold?: number): Promise<BitMapBuffer> {
         let sourceImage: Jimp;
-        if (type === SKELETONIZEREQUESTIMAGETYPE.PNG || type === SKELETONIZEREQUESTIMAGETYPE.BMP) {
-            sourceImage = (await Jimp.read(Buffer.from(buffer))).grayscale();
-        } else if (type === SKELETONIZEREQUESTIMAGETYPE.BINARYSTRINGWITHNEWLINE) {
-            sourceImage = this.convertToBitmapGrayImage(buffer).grayscale();
+        if (type === IMAGEDATATYPE.PNG || type === IMAGEDATATYPE.BMP) {
+            sourceImage = (await Jimp.read(Buffer.from(buffer))).contrast(1).grayscale();
+        } else if (type === IMAGEDATATYPE.BINARYSTRINGWITHNEWLINE) {
+            sourceImage = this.convertToBitmapGrayImage(buffer).contrast(1).grayscale();
         } else {
             throw Error('unsupported type: ' + type);
         }
@@ -26,10 +27,12 @@ export class ImageConverter {
         let right = Number.MIN_VALUE;
         let left = Number.MAX_VALUE;
 
+        const whiteThreshold = grayScaleWhiteThreshold || this.config.grayScaleWhiteThreshold;
+
         for (let i = 0; i < sourceImage.getHeight(); i++) {
             for (let j = 0; j < sourceImage.getWidth(); j++) {
                 const rgba = Jimp.intToRGBA(sourceImage.getPixelColor(j, i));
-                if ((rgba.r + rgba.g + rgba.b) / 3 <= this.config.grayScaleWhiteThreshold) {
+                if ((rgba.r + rgba.g + rgba.b) / 3 <= whiteThreshold) {
                     top = Math.min(i, top);
                     bottom = Math.max(i, bottom);
                     left = Math.min(j, left);

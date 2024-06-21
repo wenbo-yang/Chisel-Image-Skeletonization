@@ -20,7 +20,7 @@ export class SkeletonizationServiceConfig implements ISkeletonizationServiceConf
     }
 
     public get grayScaleWhiteThreshold() {
-        return 100;
+        return 250;
     }
 
     public get shortName() {

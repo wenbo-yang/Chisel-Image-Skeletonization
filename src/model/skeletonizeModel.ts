@@ -1,10 +1,11 @@
 import { gzip, ungzip } from 'node-gzip';
-import { COMPRESSION, ISkeletonizationServiceConfig, SKELETONIZEREQUESTIMAGETYPE, SkeletonizedImage, TRANSFORMEDTYPE } from '../types/skeletonizeTypes';
+import { ISkeletonizationServiceConfig, SkeletonizedImage, TRANSFORMEDTYPE } from '../types/skeletonizeTypes';
 import { ImageConverter } from '../utils/imageConverter/imageConverter';
 import { Skeletonizer } from '../utils/skeletonizer';
-import { convertBitmapDataToZeroOneMat, convertMatToNewLineSeparatedString } from '../../Chisel-Global-Common-Libraries/src/lib/binaryMatUtils';
+import { convertBitmapDataToZeroOneMat, convertMatToImage, convertMatToNewLineSeparatedString, convertNewLineSeparatedStringToImage } from '../../Chisel-Global-Common-Libraries/src/lib/binaryMatUtils';
 import { PerimeterTracer } from '../utils/perimeterTracer';
 import { SkeletonizationServiceConfig } from '../config';
+import { COMPRESSIONTYPE, IMAGEDATATYPE } from '../../Chisel-Global-Common-Libraries/src/types/commonTypes';
 
 export class SkeletonizeModel {
     private imageConverter: ImageConverter;
@@ -18,22 +19,23 @@ export class SkeletonizeModel {
         this.perimeterTracer = perimeterTracer || new PerimeterTracer(this.config);
     }
 
-    public async tryskeletonize(type: SKELETONIZEREQUESTIMAGETYPE, compression: COMPRESSION, returnCompression: COMPRESSION, data: Buffer, returnImageHeight?: number, returnImageWidth?: number): Promise<SkeletonizedImage> {
-        const bitmapImage = await this.imageConverter.convertAndResizeToBMP(type, compression === COMPRESSION.GZIP ? await this.uncompress(data) : data, returnImageHeight, returnImageWidth);
+    public async tryskeletonize(type: IMAGEDATATYPE, compression: COMPRESSIONTYPE, returnCompression: COMPRESSIONTYPE, data: Buffer, returnImageHeight?: number, returnImageWidth?: number, grayscaleWhiteThreshold?: number): Promise<SkeletonizedImage> {
+        const bitmapImage = await this.imageConverter.convertAndResizeToBMP(type, compression === COMPRESSIONTYPE.GZIP ? await this.uncompress(data) : data, returnImageHeight, returnImageWidth, grayscaleWhiteThreshold);
         const binaryMat = await convertBitmapDataToZeroOneMat(bitmapImage.imageBuffer, this.config.grayScaleWhiteThreshold);
-        const perimeters = await this.perimeterTracer.trace(binaryMat);
+        const perimeters = await this.perimeterTracer.trace(binaryMat, returnCompression);
         const skeleton = await this.skeletonizer.skeletonizeImage(binaryMat);
-        const grayScaleImageData = Buffer.from(returnCompression === COMPRESSION.GZIP ? await this.compress(bitmapImage.imageBuffer) : bitmapImage.imageBuffer).toString('base64');
+        const grayScaleImageData = Buffer.from(returnCompression === COMPRESSIONTYPE.GZIP ? await this.compress(bitmapImage.imageBuffer) : bitmapImage.imageBuffer).toString('base64');
         return {
             compression: returnCompression,
             imageType: bitmapImage.imageType,
             grayScale: grayScaleImageData,
             transformedData: perimeters.concat([
-                { type: TRANSFORMEDTYPE.ORIGINAL, offset: { r: 0, c: 0 }, stroke: convertMatToNewLineSeparatedString(binaryMat) },
+                { type: TRANSFORMEDTYPE.ORIGINAL, offset: { r: 0, c: 0 }, stroke: convertMatToNewLineSeparatedString(binaryMat), strokeImage: await convertMatToImage(binaryMat, returnCompression)},
                 {
                     type: TRANSFORMEDTYPE.SKELETON,
                     offset: { r: 0, c: 0 },
                     stroke: skeleton,
+                    strokeImage: await convertNewLineSeparatedStringToImage(skeleton, returnCompression),
                 },
             ]),
         };

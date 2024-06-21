@@ -1,7 +1,7 @@
 import { SkeletonizationServiceConfig } from '../config';
 import { ISkeletonizationServiceConfig, TRANSFORMEDTYPE, Transformed } from '../types/skeletonizeTypes';
-import { convertMatToNewLineSeparatedString, generateMat, getOffsetsFromPointList } from '../../Chisel-Global-Common-Libraries/src/lib/binaryMatUtils';
-import { Point } from '../../Chisel-Global-Common-Libraries/src/types/commonTypes';
+import { convertMatToImage, convertMatToNewLineSeparatedString, generateMat, getOffsetsFromPointList } from '../../Chisel-Global-Common-Libraries/src/lib/binaryMatUtils';
+import { COMPRESSIONTYPE, Point } from '../../Chisel-Global-Common-Libraries/src/types/commonTypes';
 
 export class PerimeterTracer {
     private config: ISkeletonizationServiceConfig;
@@ -10,14 +10,14 @@ export class PerimeterTracer {
         this.config = config || new SkeletonizationServiceConfig();
     }
 
-    public async trace(binaryMat: Array<number[]>): Promise<Transformed[]> {
+    public async trace(binaryMat: Array<number[]>, returnCompression: COMPRESSIONTYPE): Promise<Transformed[]> {
         const islandPerimeters = this.findIslands(binaryMat);
-        const perimeterStrokes = this.applyIslandPerimetersToMat(islandPerimeters);
+        const perimeterStrokes = this.applyIslandPerimetersToMat(islandPerimeters, returnCompression);
 
         return perimeterStrokes;
     }
 
-    private async applyIslandPerimetersToMat(islandPerimeters: Point[][]): Promise<Transformed[]> {
+    private async applyIslandPerimetersToMat(islandPerimeters: Point[][], returnCompression: COMPRESSIONTYPE): Promise<Transformed[]> {
         let strokes: Transformed[] = [];
 
         for (let i = 0; i < islandPerimeters.length; i++) {
@@ -25,7 +25,7 @@ export class PerimeterTracer {
             const islandPerimeterMat = this.mapIslandPerimeter(offsets, islandPerimeters[i]);
             const islandPerimeterString = convertMatToNewLineSeparatedString(islandPerimeterMat);
 
-            strokes.push({ type: TRANSFORMEDTYPE.PERIMETER, offset: { r: offsets[0].r - 1, c: offsets[0].c - 1 }, stroke: islandPerimeterString });
+            strokes.push({ type: TRANSFORMEDTYPE.PERIMETER, offset: { r: offsets[0].r - 1, c: offsets[0].c - 1 }, stroke: islandPerimeterString, strokeImage: await convertMatToImage(islandPerimeterMat, returnCompression)});
         }
 
         return strokes;
