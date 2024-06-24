@@ -12,9 +12,7 @@ export interface SkeletonizeRequestBody {
 }
 
 export interface SkeletonizedImage {
-    imageType: string;
     compression: string;
-    grayScale: string;
     transformedData: Transformed[];
 }
 
