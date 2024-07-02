@@ -471,5 +471,25 @@ describe('skeletonize request', () => {
             expect(response.data.transformedData[2].stroke.split('\n').length).toEqual(50);
             expect(response.data.transformedData[2].stroke.split('\n')[0].length).toEqual(50);
         });
+
+        it('should return character with requested height and width and write the entire data', async () => {
+            // prettier-ignore
+            const sampleImageUrl = './test/integration/data/zou_charactrer_denoised_prepared.png';
+            const data = await fs.readFile(sampleImageUrl);
+            const arrayBuffer = Buffer.from(data).toString('base64');
+    
+            const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
+                name: 'zou_charactrer_denoised_prepared',
+                type: IMAGEDATATYPE.PNG,
+                compression: COMPRESSIONTYPE.PLAIN,
+                data: arrayBuffer,
+                returnCompression: COMPRESSIONTYPE.GZIP,
+                returnImageHeight: 80,
+                returnImageWidth: 80,
+            });
+    
+            expect(response.data).toBeDefined();
+            await fs.writeFile('./test/integration/data/output_zou_character_denoised_prepared_test.json', JSON.stringify(response.data), { flag: 'w+' });
+        });
     });
 });
