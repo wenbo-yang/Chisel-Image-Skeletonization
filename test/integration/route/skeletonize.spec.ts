@@ -565,7 +565,6 @@ describe('skeletonize request', () => {
                 returnImageWidth: 50,
             });
     
-            const skeleton = (await ungzip(Buffer.from(response.data.transformedData[2].stroke, 'base64'))).toString();
             const skeletonImage = await Jimp.read(await ungzip(Buffer.from(response.data.transformedData.find(t => t.type === 'SKELETON')?.strokeImage || '', 'base64')));
             expect(response.data).toBeDefined();
             await skeletonImage.writeAsync('./test/integration/data/running_man_image_4_preprocessed_mirror_skeletonized_test.png');
