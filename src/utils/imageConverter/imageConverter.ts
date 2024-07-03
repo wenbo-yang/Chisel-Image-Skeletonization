@@ -59,12 +59,12 @@ export class ImageConverter {
         const cols = binaryMat[0].length;
 
         const sourceImage = new Jimp(cols, rows, 'white');
-        const hexRedColor = Jimp.rgbaToInt(255, 52, 42, 255);
+        const hexBlackColor = Jimp.rgbaToInt(1, 1, 1, 255);
 
         for (let i = 0; i < sourceImage.bitmap.height; i++) {
             for (let j = 0; j < sourceImage.bitmap.width; j++) {
                 if (binaryMat[i].charAt(j) === '1') {
-                    sourceImage.setPixelColor(hexRedColor, j, i);
+                    sourceImage.setPixelColor(hexBlackColor, j, i);
                 }
             }
         }
