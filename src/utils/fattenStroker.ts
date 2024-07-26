@@ -2,10 +2,10 @@ import Jimp from "jimp";
 import { COMPRESSIONTYPE, Point } from "../../Chisel-Global-Common-Libraries/src/types/commonTypes";
 import { SkeletonizationServiceConfig } from "../config";
 import { ISkeletonizationServiceConfig, Transformed, TRANSFORMEDTYPE } from "../types/skeletonizeTypes";
-import { convertBitmapDataToZeroOneMat, convertMatToImage, convertMatToNewLineSeparatedString } from "../../Chisel-Global-Common-Libraries/src/lib/binaryMatUtils";
+import { convertBitmapDataToZeroOneMat, convertMatToNewLineSeparatedString } from "../../Chisel-Global-Common-Libraries/src/lib/binaryMatUtils";
 import { gzip } from "node-gzip";
 
-export class FattenStroker {
+export class Fattener {
     private config: ISkeletonizationServiceConfig;
 
     constructor(config?: ISkeletonizationServiceConfig) {
@@ -35,7 +35,7 @@ export class FattenStroker {
         const fattenedBinaryMat = await convertBitmapDataToZeroOneMat(await jimp.getBufferAsync(Jimp.MIME_BMP), this.config.grayScaleWhiteThreshold);
 
         return {
-            type: TRANSFORMEDTYPE.BOLDSKELETON,
+            type: TRANSFORMEDTYPE.FATTENEDSKELETON,
             offset: {r:0, c:0},
             stroke: await convertMatToNewLineSeparatedString(fattenedBinaryMat, returnCompression),
             strokeImage: returnCompression === COMPRESSIONTYPE.GZIP ? Buffer.from(await gzip(await jimp.getBufferAsync(Jimp.MIME_PNG))).toString('base64') : (await jimp.getBufferAsync(Jimp.MIME_PNG)).toString('base64')

@@ -6,20 +6,20 @@ import { convertBitmapDataToZeroOneMat, convertMatToImage, convertMatToNewLineSe
 import { PerimeterTracer } from '../utils/perimeterTracer';
 import { SkeletonizationServiceConfig } from '../config';
 import { COMPRESSIONTYPE, IMAGEDATATYPE } from '../../Chisel-Global-Common-Libraries/src/types/commonTypes';
-import { BoldStroker } from '../utils/boldStroker';
+import { Fattener } from '../utils/fattenStroker';
 
 export class SkeletonizeModel {
     private imageConverter: ImageConverter;
     private skeletonizer: Skeletonizer;
     private config: ISkeletonizationServiceConfig;
     private perimeterTracer: PerimeterTracer;
-    private boldStroker: BoldStroker;
-    constructor(config?: ISkeletonizationServiceConfig, imageConverter?: ImageConverter, skeletonizer?: Skeletonizer, perimeterTracer?: PerimeterTracer, boldStroker?: BoldStroker) {
+    private fattener: Fattener;
+    constructor(config?: ISkeletonizationServiceConfig, imageConverter?: ImageConverter, skeletonizer?: Skeletonizer, perimeterTracer?: PerimeterTracer, fattener?: Fattener) {
         this.config = config || new SkeletonizationServiceConfig();
         this.imageConverter = imageConverter || new ImageConverter(this.config);
         this.skeletonizer = skeletonizer || new Skeletonizer(this.config);
         this.perimeterTracer = perimeterTracer || new PerimeterTracer(this.config);
-        this.boldStroker = boldStroker || new BoldStroker(this.config);
+        this.fattener = fattener || new Fattener(this.config);
     }
 
     public async tryskeletonize(type: IMAGEDATATYPE, compression: COMPRESSIONTYPE, returnCompression: COMPRESSIONTYPE, data: Buffer, returnImageHeight?: number, returnImageWidth?: number, grayscaleWhiteThreshold?: number): Promise<SkeletonizedImage> {
@@ -27,7 +27,7 @@ export class SkeletonizeModel {
         const binaryMat = await convertBitmapDataToZeroOneMat(bitmapImage.imageBuffer, this.config.grayScaleWhiteThreshold);
         const perimeters = await this.perimeterTracer.trace(binaryMat, returnCompression);
         const skeleton = await this.skeletonizer.skeletonizeImage(binaryMat);
-        const boldSkeleton = await this.boldStroker.fatten(skeleton, returnCompression)
+        const boldSkeleton = await this.fattener.fatten(skeleton, returnCompression)
 
         return {
             compression: returnCompression,
