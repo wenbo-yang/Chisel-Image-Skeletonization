@@ -136,3 +136,5 @@ package-lock.json
 # ignore test data
 *test.bmp
 *test.json
+*test.png
+*.DS_Store

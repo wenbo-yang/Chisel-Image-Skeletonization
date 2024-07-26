@@ -1,7 +1,8 @@
 import Jimp from 'jimp';
 import { BitMapBuffer } from '../bitMapBuffer';
 import { SkeletonizationServiceConfig } from '../../config';
-import { ISkeletonizationServiceConfig, SKELETONIZEREQUESTIMAGETYPE } from '../../types/skeletonizeTypes';
+import { ISkeletonizationServiceConfig } from '../../types/skeletonizeTypes';
+import { IMAGEDATATYPE } from '../../../Chisel-Global-Common-Libraries/src/types/commonTypes';
 
 export class ImageConverter {
     private config: ISkeletonizationServiceConfig;
@@ -10,26 +11,28 @@ export class ImageConverter {
         this.config = config || new SkeletonizationServiceConfig();
     }
 
-    public async convertAndResizeToBMP(type: SKELETONIZEREQUESTIMAGETYPE, buffer: Buffer, convertedImageHeight?: number, convertedImageWidth?: number): Promise<BitMapBuffer> {
+    public async convertAndResizeToBMP(type: IMAGEDATATYPE, buffer: Buffer, convertedImageHeight?: number, convertedImageWidth?: number, grayScaleWhiteThreshold?: number): Promise<BitMapBuffer> {
         let sourceImage: Jimp;
-        if (type === SKELETONIZEREQUESTIMAGETYPE.PNG || type === SKELETONIZEREQUESTIMAGETYPE.BMP) {
-            sourceImage = (await Jimp.read(Buffer.from(buffer))).grayscale();
-        } else if (type === SKELETONIZEREQUESTIMAGETYPE.BINARYSTRINGWITHNEWLINE) {
-            sourceImage = this.convertToBitmapGrayImage(buffer).grayscale();
+        if (type === IMAGEDATATYPE.PNG || type === IMAGEDATATYPE.BMP) {
+            sourceImage = (await Jimp.read(Buffer.from(buffer))).contrast(1).grayscale();
+        } else if (type === IMAGEDATATYPE.BINARYSTRINGWITHNEWLINE) {
+            sourceImage = this.convertToBitmapGrayImage(buffer).contrast(1).grayscale();
         } else {
             throw Error('unsupported type: ' + type);
         }
 
         // get the box
-        let top = Number.MAX_VALUE;
-        let bottom = Number.MIN_VALUE;
-        let right = Number.MIN_VALUE;
-        let left = Number.MAX_VALUE;
+        let top = Number.MAX_SAFE_INTEGER;
+        let bottom = Number.MIN_SAFE_INTEGER;
+        let right = Number.MIN_SAFE_INTEGER;
+        let left = Number.MAX_SAFE_INTEGER;
+
+        const whiteThreshold = grayScaleWhiteThreshold || this.config.grayScaleWhiteThreshold;
 
         for (let i = 0; i < sourceImage.getHeight(); i++) {
             for (let j = 0; j < sourceImage.getWidth(); j++) {
                 const rgba = Jimp.intToRGBA(sourceImage.getPixelColor(j, i));
-                if ((rgba.r + rgba.g + rgba.b) / 3 <= this.config.grayScaleWhiteThreshold) {
+                if ((rgba.r + rgba.g + rgba.b) / 3 <= whiteThreshold) {
                     top = Math.min(i, top);
                     bottom = Math.max(i, bottom);
                     left = Math.min(j, left);
@@ -56,12 +59,12 @@ export class ImageConverter {
         const cols = binaryMat[0].length;
 
         const sourceImage = new Jimp(cols, rows, 'white');
-        const hexRedColor = Jimp.rgbaToInt(255, 52, 42, 255);
+        const hexBlackColor = Jimp.rgbaToInt(1, 1, 1, 255);
 
         for (let i = 0; i < sourceImage.bitmap.height; i++) {
             for (let j = 0; j < sourceImage.bitmap.width; j++) {
                 if (binaryMat[i].charAt(j) === '1') {
-                    sourceImage.setPixelColor(hexRedColor, j, i);
+                    sourceImage.setPixelColor(hexBlackColor, j, i);
                 }
             }
         }

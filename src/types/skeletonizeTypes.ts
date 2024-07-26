@@ -1,19 +1,18 @@
-import { Point } from '../../Chisel-Global-Common-Libraries/src/types/commonTypes';
+import { IMAGEDATATYPE, COMPRESSIONTYPE, Point } from '../../Chisel-Global-Common-Libraries/src/types/commonTypes';
 
 export interface SkeletonizeRequestBody {
     name: string;
-    type: SKELETONIZEREQUESTIMAGETYPE;
-    compression: COMPRESSION;
+    type: IMAGEDATATYPE;
+    compression: COMPRESSIONTYPE;
     data: string;
-    returnCompression: COMPRESSION;
+    grayScaleWhiteThreshold?: number;
+    returnCompression: COMPRESSIONTYPE;
     returnImageHeight?: number;
     returnImageWidth?: number;
 }
 
 export interface SkeletonizedImage {
-    imageType: string;
     compression: string;
-    grayScale: string;
     transformedData: Transformed[];
 }
 
@@ -23,6 +22,7 @@ export interface Transformed {
     primitiveType?: PRIMITIVETYPE;
     offset: Point;
     stroke: string;
+    strokeImage: string;
 }
 
 export enum TRANSFORMEDTYPE {
@@ -30,6 +30,7 @@ export enum TRANSFORMEDTYPE {
     PERIMETER = 'PERIMETER',
     SINGLESTROKE = 'SINGLESTROKE',
     SKELETON = 'SKELETON',
+    FATTENEDSKELETON = 'FATTENEDSKELETON'
 }
 
 export enum PRIMITIVETYPE {
@@ -51,18 +52,7 @@ export enum PRIMITIVETYPE {
     ELLIPTICAL = 'ELLIPTICAL',
 }
 
-export enum SKELETONIZEREQUESTIMAGETYPE {
-    PNG = 'PNG',
-    BMP = 'BMP',
-    BINARYSTRINGWITHNEWLINE = 'BINARYSTRINGWITHNEWLINE',
-}
-
 export type SkeletonizeResponse = SkeletonizedImage;
-
-export enum COMPRESSION {
-    GZIP = 'GZIP',
-    NONE = 'NONE',
-}
 
 export interface SkeletonizeProcessor {
     thinning(binaryMat: Array<number[]>): Promise<Array<number[]>>;
@@ -76,6 +66,7 @@ export interface ISkeletonizationServiceConfig {
     useGpuSkeletonizer: boolean;
     env: string;
     servicePorts: ServicePorts;
+    fattenRadius: number;
 }
 
 export interface ServiceConfig {
