@@ -2,7 +2,7 @@ import Jimp from "jimp";
 import { COMPRESSIONTYPE, Point } from "../../Chisel-Global-Common-Libraries/src/types/commonTypes";
 import { SkeletonizationServiceConfig } from "../config";
 import { ISkeletonizationServiceConfig, Transformed, TRANSFORMEDTYPE } from "../types/skeletonizeTypes";
-import { convertBitmapDataToZeroOneMat, convertMatToNewLineSeparatedString } from "../../Chisel-Global-Common-Libraries/src/lib/binaryMatUtils";
+import { convertBitmapDataToZeroOneMat, convertMatToImage, convertMatToNewLineSeparatedString } from "../../Chisel-Global-Common-Libraries/src/lib/binaryMatUtils";
 import { gzip } from "node-gzip";
 
 export class Fattener {
@@ -38,7 +38,7 @@ export class Fattener {
             type: TRANSFORMEDTYPE.FATTENEDSKELETON,
             offset: {r:0, c:0},
             stroke: await convertMatToNewLineSeparatedString(fattenedBinaryMat, returnCompression),
-            strokeImage: returnCompression === COMPRESSIONTYPE.GZIP ? Buffer.from(await gzip(await jimp.getBufferAsync(Jimp.MIME_PNG))).toString('base64') : (await jimp.getBufferAsync(Jimp.MIME_PNG)).toString('base64')
+            strokeImage: await convertMatToImage(fattenedBinaryMat, returnCompression, true, this.config.grayScaleWhiteThreshold)
         };
     }
 

@@ -37,7 +37,7 @@ export class SkeletonizeModel {
                     type: TRANSFORMEDTYPE.SKELETON,
                     offset: { r: 0, c: 0 },
                     stroke: await convertMatToNewLineSeparatedString(skeleton, returnCompression),
-                    strokeImage: await convertMatToImage(skeleton, returnCompression),
+                    strokeImage: await convertMatToImage(skeleton, returnCompression, true, this.config.grayScaleWhiteThreshold),
                 },
                 boldSkeleton
             ]),
