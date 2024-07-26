@@ -25,7 +25,7 @@ export class PerimeterTracer {
             const islandPerimeterMat = this.mapIslandPerimeter(offsets, islandPerimeters[i]);
             const islandPerimeterString = await convertMatToNewLineSeparatedString(islandPerimeterMat, returnCompression);
 
-            strokes.push({ type: TRANSFORMEDTYPE.PERIMETER, offset: { r: offsets[0].r - 1, c: offsets[0].c - 1 }, stroke: islandPerimeterString, strokeImage: await convertMatToImage(islandPerimeterMat, returnCompression)});
+            strokes.push({ type: TRANSFORMEDTYPE.PERIMETER, offset: { r: offsets[0].r - 1, c: offsets[0].c - 1 }, stroke: islandPerimeterString, strokeImage: await convertMatToImage(islandPerimeterMat, returnCompression) });
         }
 
         return strokes;

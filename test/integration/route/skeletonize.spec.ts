@@ -152,7 +152,7 @@ describe('skeletonize request', () => {
                 returnImageWidth: 40,
             });
 
-            expect(response.data.transformedData.find((s: Transformed )=> s.type === TRANSFORMEDTYPE.ORIGINAL)?.stroke).toEqual(expectedImage);
+            expect(response.data.transformedData.find((s: Transformed) => s.type === TRANSFORMEDTYPE.ORIGINAL)?.stroke).toEqual(expectedImage);
         });
 
         it('should receive mat with expected skeleton matrix', async () => {
@@ -323,7 +323,7 @@ describe('skeletonize request', () => {
             });
 
             const strokes = response.data.transformedData;
-            
+
             expect(response.data.transformedData[2]).toBeDefined();
             expect(strokes.length).toEqual(4);
             expect(response.data.transformedData[2].stroke.split('\n').length).toEqual(150);
@@ -465,7 +465,7 @@ describe('skeletonize request', () => {
             });
 
             const strokes = response.data.transformedData;
-            
+
             expect(response.data.transformedData[2]).toBeDefined();
             expect(strokes.length).toEqual(4);
             expect(response.data.transformedData[2].stroke.split('\n').length).toEqual(50);
@@ -525,11 +525,11 @@ describe('skeletonize request', () => {
                 '00000000000000000000000000000000000000001000000000' + '\n' +
                 '00000000000000000000000000000000000000000000000000' + '\n' +
                 '00000000000000000000000000000000000000000000000000';
-                
+
             const sampleImageUrl = './test/integration/data/zou_charactrer_denoised_prepared.png';
             const data = await fs.readFile(sampleImageUrl);
             const arrayBuffer = Buffer.from(data).toString('base64');
-    
+
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'zou_charactrer_denoised_prepared',
                 type: IMAGEDATATYPE.PNG,
@@ -539,7 +539,7 @@ describe('skeletonize request', () => {
                 returnImageHeight: 50,
                 returnImageWidth: 50,
             });
-    
+
             const skeleton = (await ungzip(Buffer.from(response.data.transformedData[2].stroke, 'base64'))).toString();
             const skeletonImage = await Jimp.read(await ungzip(Buffer.from(response.data.transformedData[2].strokeImage, 'base64')));
             expect(response.data).toBeDefined();
@@ -554,7 +554,7 @@ describe('skeletonize request', () => {
             const sampleImageUrl = './test/integration/data/running_man_image_4_preprocessed_mirror.png';
             const data = await fs.readFile(sampleImageUrl);
             const arrayBuffer = Buffer.from(data).toString('base64');
-    
+
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'running_man_image_5_preprocessed_mirror',
                 type: IMAGEDATATYPE.PNG,
@@ -564,8 +564,8 @@ describe('skeletonize request', () => {
                 returnImageHeight: 50,
                 returnImageWidth: 50,
             });
-    
-            const skeletonImage = await Jimp.read(await ungzip(Buffer.from(response.data.transformedData.find(t => t.type === 'SKELETON')?.strokeImage || '', 'base64')));
+
+            const skeletonImage = await Jimp.read(await ungzip(Buffer.from(response.data.transformedData.find((t) => t.type === 'SKELETON')?.strokeImage || '', 'base64')));
             expect(response.data).toBeDefined();
             await skeletonImage.writeAsync('./test/integration/data/running_man_image_4_preprocessed_mirror_skeletonized_test.png');
         });
@@ -574,7 +574,7 @@ describe('skeletonize request', () => {
             const sampleImageUrl = './test/integration/data/yang_charactrer_denoised_prepared.png';
             const data = await fs.readFile(sampleImageUrl);
             const arrayBuffer = Buffer.from(data).toString('base64');
-    
+
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'yang_charactrer_denoised_prepared',
                 type: IMAGEDATATYPE.PNG,
@@ -584,7 +584,7 @@ describe('skeletonize request', () => {
                 returnImageHeight: 50,
                 returnImageWidth: 50,
             });
-    
+
             const skeleton = (await ungzip(Buffer.from(response.data.transformedData[2].stroke, 'base64'))).toString();
             const skeletonImage = await Jimp.read(await ungzip(Buffer.from(response.data.transformedData[2].strokeImage, 'base64')));
             expect(response.data).toBeDefined();
@@ -597,7 +597,7 @@ describe('skeletonize request', () => {
             const sampleImageUrl = './test/integration/data/niu_charactrer_denoised_prepared.png';
             const data = await fs.readFile(sampleImageUrl);
             const arrayBuffer = Buffer.from(data).toString('base64');
-    
+
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'niu_charactrer_denoised_prepared',
                 type: IMAGEDATATYPE.PNG,
@@ -607,7 +607,7 @@ describe('skeletonize request', () => {
                 returnImageHeight: 50,
                 returnImageWidth: 50,
             });
-    
+
             const skeleton = (await ungzip(Buffer.from(response.data.transformedData[2].stroke, 'base64'))).toString();
             const skeletonImage = await Jimp.read(await ungzip(Buffer.from(response.data.transformedData[2].strokeImage, 'base64')));
             expect(response.data).toBeDefined();
@@ -620,7 +620,7 @@ describe('skeletonize request', () => {
             const sampleImageUrl = './test/integration/data/niu_charactrer_denoised_prepared.png';
             const data = await fs.readFile(sampleImageUrl);
             const arrayBuffer = Buffer.from(data).toString('base64');
-    
+
             const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
                 name: 'niu_charactrer_denoised_prepared',
                 type: IMAGEDATATYPE.PNG,
@@ -630,7 +630,7 @@ describe('skeletonize request', () => {
                 returnImageHeight: 50,
                 returnImageWidth: 50,
             });
-    
+
             const fattenedSkeleton = await Jimp.read(await ungzip(Buffer.from(response.data.transformedData[3].strokeImage, 'base64')));
             expect(response.data).toBeDefined();
 

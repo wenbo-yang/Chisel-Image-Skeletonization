@@ -27,19 +27,19 @@ export class SkeletonizeModel {
         const binaryMat = await convertBitmapDataToZeroOneMat(bitmapImage.imageBuffer, this.config.grayScaleWhiteThreshold);
         const perimeters = await this.perimeterTracer.trace(binaryMat, returnCompression);
         const skeleton = await this.skeletonizer.skeletonizeImage(binaryMat);
-        const boldSkeleton = await this.fattener.fatten(skeleton, returnCompression)
+        const boldSkeleton = await this.fattener.fatten(skeleton, returnCompression);
 
         return {
             compression: returnCompression,
             transformedData: perimeters.concat([
-                { type: TRANSFORMEDTYPE.ORIGINAL, offset: { r: 0, c: 0 }, stroke: await convertMatToNewLineSeparatedString(binaryMat, returnCompression), strokeImage: await convertMatToImage(binaryMat, returnCompression)},
+                { type: TRANSFORMEDTYPE.ORIGINAL, offset: { r: 0, c: 0 }, stroke: await convertMatToNewLineSeparatedString(binaryMat, returnCompression), strokeImage: await convertMatToImage(binaryMat, returnCompression) },
                 {
                     type: TRANSFORMEDTYPE.SKELETON,
                     offset: { r: 0, c: 0 },
                     stroke: await convertMatToNewLineSeparatedString(skeleton, returnCompression),
                     strokeImage: await convertMatToImage(skeleton, returnCompression, true, this.config.grayScaleWhiteThreshold),
                 },
-                boldSkeleton
+                boldSkeleton,
             ]),
         };
     }
