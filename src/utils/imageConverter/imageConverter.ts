@@ -22,10 +22,10 @@ export class ImageConverter {
         }
 
         // get the box
-        let top = Number.MAX_VALUE;
-        let bottom = Number.MIN_VALUE;
-        let right = Number.MIN_VALUE;
-        let left = Number.MAX_VALUE;
+        let top = Number.MAX_SAFE_INTEGER;
+        let bottom = Number.MIN_SAFE_INTEGER;
+        let right = Number.MIN_SAFE_INTEGER;
+        let left = Number.MAX_SAFE_INTEGER;
 
         const whiteThreshold = grayScaleWhiteThreshold || this.config.grayScaleWhiteThreshold;
 

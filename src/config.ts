@@ -35,6 +35,10 @@ export class SkeletonizationServiceConfig implements ISkeletonizationServiceConf
         return process.env.NODE_ENV || 'development';
     }
 
+    public get fattenRadius() {
+        return 1;
+    }
+
     public get servicePorts(): ServicePorts {
         return this.globalServicePortMappings.hasOwnProperty(this.serviceConfig.serviceName) && this.globalServicePortMappings[this.serviceConfig.serviceName].hasOwnProperty(this.env) ? this.globalServicePortMappings[this.serviceConfig.serviceName][this.env] : { http: 5000, https: 3000 };
     }

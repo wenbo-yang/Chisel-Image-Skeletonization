@@ -6,17 +6,20 @@ import { convertBitmapDataToZeroOneMat, convertMatToImage, convertMatToNewLineSe
 import { PerimeterTracer } from '../utils/perimeterTracer';
 import { SkeletonizationServiceConfig } from '../config';
 import { COMPRESSIONTYPE, IMAGEDATATYPE } from '../../Chisel-Global-Common-Libraries/src/types/commonTypes';
+import { BoldStroker } from '../utils/boldStroker';
 
 export class SkeletonizeModel {
     private imageConverter: ImageConverter;
     private skeletonizer: Skeletonizer;
     private config: ISkeletonizationServiceConfig;
     private perimeterTracer: PerimeterTracer;
-    constructor(config?: ISkeletonizationServiceConfig, imageConverter?: ImageConverter, skeletonizer?: Skeletonizer, perimeterTracer?: PerimeterTracer) {
+    private boldStroker: BoldStroker;
+    constructor(config?: ISkeletonizationServiceConfig, imageConverter?: ImageConverter, skeletonizer?: Skeletonizer, perimeterTracer?: PerimeterTracer, boldStroker?: BoldStroker) {
         this.config = config || new SkeletonizationServiceConfig();
         this.imageConverter = imageConverter || new ImageConverter(this.config);
         this.skeletonizer = skeletonizer || new Skeletonizer(this.config);
         this.perimeterTracer = perimeterTracer || new PerimeterTracer(this.config);
+        this.boldStroker = boldStroker || new BoldStroker(this.config);
     }
 
     public async tryskeletonize(type: IMAGEDATATYPE, compression: COMPRESSIONTYPE, returnCompression: COMPRESSIONTYPE, data: Buffer, returnImageHeight?: number, returnImageWidth?: number, grayscaleWhiteThreshold?: number): Promise<SkeletonizedImage> {
@@ -24,6 +27,7 @@ export class SkeletonizeModel {
         const binaryMat = await convertBitmapDataToZeroOneMat(bitmapImage.imageBuffer, this.config.grayScaleWhiteThreshold);
         const perimeters = await this.perimeterTracer.trace(binaryMat, returnCompression);
         const skeleton = await this.skeletonizer.skeletonizeImage(binaryMat);
+        const boldSkeleton = await this.boldStroker.fatten(skeleton, returnCompression)
 
         return {
             compression: returnCompression,
@@ -35,6 +39,7 @@ export class SkeletonizeModel {
                     stroke: await convertMatToNewLineSeparatedString(skeleton, returnCompression),
                     strokeImage: await convertMatToImage(skeleton, returnCompression),
                 },
+                boldSkeleton
             ]),
         };
     }

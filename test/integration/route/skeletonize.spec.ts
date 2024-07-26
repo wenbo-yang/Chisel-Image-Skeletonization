@@ -301,7 +301,7 @@ describe('skeletonize request', () => {
             const strokes = response.data.transformedData;
 
             expect(response.data.transformedData[2]).toBeDefined();
-            expect(strokes.length).toEqual(3);
+            expect(strokes.length).toEqual(4);
             expect(strokes[0].stroke).toEqual(expectedPerimeter);
             expect(strokes[0].type).toEqual(TRANSFORMEDTYPE.PERIMETER);
         });
@@ -325,12 +325,12 @@ describe('skeletonize request', () => {
             const strokes = response.data.transformedData;
             
             expect(response.data.transformedData[2]).toBeDefined();
-            expect(strokes.length).toEqual(3);
+            expect(strokes.length).toEqual(4);
             expect(response.data.transformedData[2].stroke.split('\n').length).toEqual(150);
             expect(response.data.transformedData[2].stroke.split('\n')[0].length).toEqual(120);
         });
 
-        it('test123 should respond with 200, after sending binary with new line breaks', async () => {
+        it('should respond with 200, after sending binary with new line breaks', async () => {
             const sampleImageUrl = './test/integration/data/running_man.png';
             const data = await fs.readFile(sampleImageUrl);
             const grayscaleWhiteThreshold = new SkeletonizationServiceConfig().grayScaleWhiteThreshold;
@@ -467,7 +467,7 @@ describe('skeletonize request', () => {
             const strokes = response.data.transformedData;
             
             expect(response.data.transformedData[2]).toBeDefined();
-            expect(strokes.length).toEqual(3);
+            expect(strokes.length).toEqual(4);
             expect(response.data.transformedData[2].stroke.split('\n').length).toEqual(50);
             expect(response.data.transformedData[2].stroke.split('\n')[0].length).toEqual(50);
         });
@@ -568,6 +568,74 @@ describe('skeletonize request', () => {
             const skeletonImage = await Jimp.read(await ungzip(Buffer.from(response.data.transformedData.find(t => t.type === 'SKELETON')?.strokeImage || '', 'base64')));
             expect(response.data).toBeDefined();
             await skeletonImage.writeAsync('./test/integration/data/running_man_image_4_preprocessed_mirror_skeletonized_test.png');
+        });
+
+        it('should return character with requested height and width and write the entire data for character yang', async () => {
+            const sampleImageUrl = './test/integration/data/yang_charactrer_denoised_prepared.png';
+            const data = await fs.readFile(sampleImageUrl);
+            const arrayBuffer = Buffer.from(data).toString('base64');
+    
+            const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
+                name: 'yang_charactrer_denoised_prepared',
+                type: IMAGEDATATYPE.PNG,
+                compression: COMPRESSIONTYPE.PLAIN,
+                data: arrayBuffer,
+                returnCompression: COMPRESSIONTYPE.GZIP,
+                returnImageHeight: 50,
+                returnImageWidth: 50,
+            });
+    
+            const skeleton = (await ungzip(Buffer.from(response.data.transformedData[2].stroke, 'base64'))).toString();
+            const skeletonImage = await Jimp.read(await ungzip(Buffer.from(response.data.transformedData[2].strokeImage, 'base64')));
+            expect(response.data).toBeDefined();
+
+            await fs.writeFile('./test/integration/data/output_yang_character_denoised_prepared_test.json', JSON.stringify(response.data), { flag: 'w+' });
+            await skeletonImage.blur(1).grayscale().writeAsync('./test/integration/data/output_yang_character_denoised_prepared_test.png');
+        });
+
+        it('should return character with requested height and width and write the entire data for character niu', async () => {
+            const sampleImageUrl = './test/integration/data/niu_charactrer_denoised_prepared.png';
+            const data = await fs.readFile(sampleImageUrl);
+            const arrayBuffer = Buffer.from(data).toString('base64');
+    
+            const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
+                name: 'niu_charactrer_denoised_prepared',
+                type: IMAGEDATATYPE.PNG,
+                compression: COMPRESSIONTYPE.PLAIN,
+                data: arrayBuffer,
+                returnCompression: COMPRESSIONTYPE.GZIP,
+                returnImageHeight: 50,
+                returnImageWidth: 50,
+            });
+    
+            const skeleton = (await ungzip(Buffer.from(response.data.transformedData[2].stroke, 'base64'))).toString();
+            const skeletonImage = await Jimp.read(await ungzip(Buffer.from(response.data.transformedData[2].strokeImage, 'base64')));
+            expect(response.data).toBeDefined();
+
+            await fs.writeFile('./test/integration/data/output_niu_character_denoised_prepared_test.json', JSON.stringify(response.data), { flag: 'w+' });
+            await skeletonImage.blur(1).grayscale().writeAsync('./test/integration/data/output_niu_character_denoised_prepared_test.png');
+        });
+
+        it('should return fattened character with requested height and width and write the entire data for character niu', async () => {
+            const sampleImageUrl = './test/integration/data/niu_charactrer_denoised_prepared.png';
+            const data = await fs.readFile(sampleImageUrl);
+            const arrayBuffer = Buffer.from(data).toString('base64');
+    
+            const response = await axiosClient.post<SkeletonizeResponse>(skeletonizeUrl, {
+                name: 'niu_charactrer_denoised_prepared',
+                type: IMAGEDATATYPE.PNG,
+                compression: COMPRESSIONTYPE.PLAIN,
+                data: arrayBuffer,
+                returnCompression: COMPRESSIONTYPE.GZIP,
+                returnImageHeight: 50,
+                returnImageWidth: 50,
+            });
+    
+            const fattenedSkeleton = await Jimp.read(await ungzip(Buffer.from(response.data.transformedData[3].strokeImage, 'base64')));
+            expect(response.data).toBeDefined();
+
+            await fs.writeFile('./test/integration/data/output_niu_character_denoised_prepared_test.json', JSON.stringify(response.data), { flag: 'w+' });
+            await fattenedSkeleton.writeAsync('./test/integration/data/output_niu_character_fattened_test.png');
         });
     });
 });

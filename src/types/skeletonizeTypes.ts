@@ -30,6 +30,7 @@ export enum TRANSFORMEDTYPE {
     PERIMETER = 'PERIMETER',
     SINGLESTROKE = 'SINGLESTROKE',
     SKELETON = 'SKELETON',
+    BOLDSKELETON = 'BOLDSKELETON'
 }
 
 export enum PRIMITIVETYPE {
@@ -65,6 +66,7 @@ export interface ISkeletonizationServiceConfig {
     useGpuSkeletonizer: boolean;
     env: string;
     servicePorts: ServicePorts;
+    fattenRadius: number;
 }
 
 export interface ServiceConfig {
