@@ -1,8 +1,8 @@
-import { gzip, ungzip } from 'node-gzip';
+import { ungzip } from 'node-gzip';
 import { ISkeletonizationServiceConfig, SkeletonizedImage, TRANSFORMEDTYPE } from '../types/skeletonizeTypes';
 import { ImageConverter } from '../utils/imageConverter/imageConverter';
 import { Skeletonizer } from '../utils/skeletonizer';
-import { convertBitmapDataToZeroOneMat, convertMatToImage, convertMatToNewLineSeparatedString, convertNewLineSeparatedStringToImage } from '../../Chisel-Global-Common-Libraries/src/lib/binaryMatUtils';
+import { convertBitmapDataToZeroOneMat, convertMatToImage, convertMatToNewLineSeparatedString } from '../../Chisel-Global-Common-Libraries/src/lib/binaryMatUtils';
 import { PerimeterTracer } from '../utils/perimeterTracer';
 import { SkeletonizationServiceConfig } from '../config';
 import { COMPRESSIONTYPE, IMAGEDATATYPE } from '../../Chisel-Global-Common-Libraries/src/types/commonTypes';
