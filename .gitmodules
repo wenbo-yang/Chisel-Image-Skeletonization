@@ -1,0 +1,6 @@
+[submodule "Chisel-Global-Service-Configs"]
+	path = Chisel-Global-Service-Configs
+	url = https://github.com/wenbo-yang/Chisel-Global-Service-Configs
+[submodule "Chisel-Model-Training-Base"]
+	path = Chisel-Model-Training-Base
+	url = https://github.com/wenbo-yang/Chisel-Model-Training-Base.git
